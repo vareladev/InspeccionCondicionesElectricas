@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_black_36dp"
+            android:title="Inicio" />
+        <item
+            android:id="@+id/nav_mediciones"
+            android:icon="@drawable/ic_insert_chart_black_36dp"
+            android:title="Registro de mediciones" />
+        <item
+            android:id="@+id/nav_equipos"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Administrar equipos" />
+        <item
+            android:id="@+id/nav_nube"
+            android:icon="@drawable/ic_cloud_upload_black_36dp"
+            android:title="Sincronizar datos"
+            />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings_black_36dp"
+            android:title="Opciones" />
+        <item
+            android:id="@+id/nav_sesion"
+            android:icon="@drawable/ic_supervisor_account_black_36dp"
+            android:title="Cerrar sesión" />
+    </group>
+</menu>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="white">#FFFFFF</color>
+    <color name="primary">#2196F3</color>
+    <color name="primary_dark">#1976D2</color>
+    <color name="primary_light">#ebf9ff</color>
+    <color name="accent">#079be2</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#BDBDBD</color>
+    <color name="green1">#03988e</color>
+    <color name="green2">#239b24</color>
+    <color name="green3">#f1fff1</color>
+    <color name="green4">#e3fffd</color>
+    <color name="red">#ff0000</color>
+    <color name="darkred">#660000</color>
+    <color name="gray">#696969</color>
+
+    <color name="orange1">#df7215</color>
+    <color name="orange2">#ffefe2</color>
+
+    <color name="table_even">#f6f6f6</color>
+    <color name="table_odd">#e9e9e9</color>
+    <color name="table_header">#2980b9</color>
+
+
+
+
+</resources>

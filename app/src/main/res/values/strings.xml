@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Registro de variables</string>
+    <string name="title1">Sistema de inspección de instalaciones eléctricas y condiciones ambientales</string>
+    <string name="title2">y condiciones ambientales</string>
+    <string name="hint_dui">DUI</string>
+    <string name="hint_password">Password</string>
+    <string name="iniciar_sesion">Iniciar sesión</string>
+    <string name="title_activity_menu">Menu</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_activity_home">Menu</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+</resources>

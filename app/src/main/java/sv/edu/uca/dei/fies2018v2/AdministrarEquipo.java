@@ -1,22 +1,24 @@
 package sv.edu.uca.dei.fies2018v2;
 
-
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
-
+import java.util.Calendar;
 import database.Adapter;
 import de.codecrafters.tableview.TableView;
 import de.codecrafters.tableview.listeners.TableDataClickListener;
@@ -28,12 +30,13 @@ import simpletable.SimpleTableHeaderAdapter;
 public class AdministrarEquipo extends Fragment {
 
     private Adapter adapter;
-    //private static final String[][] TABLE_DATA = {{ "Marca", "Modelo", "Serie", "N° Inventario" }, { "Marca", "Modelo", "Serie", "N° Inventario" }};
     private static final String[] TABLE_HEADERS = { "Marca", "Modelo", "Serie", "N° Inventario" };
-
     private TableView<String[]> tableView;
     private SimpleTableDataAdapter tableAdapter;
+    //for datepicker
+    private static EditText GlobalTxtFecha;
 
+    //constructor
     public AdministrarEquipo() {
         // Required empty public constructor
     }
@@ -78,38 +81,23 @@ public class AdministrarEquipo extends Fragment {
     private class EquipClickListener implements TableDataClickListener<String[]> {
         @Override
         public void onDataClicked(int rowIndex, String[] clickedCar) {
-            //Toast.makeText(getActivity(), "::"+rowIndex+"-----", Toast.LENGTH_SHORT).show();
-            //tableView.setDataAdapter(new SimpleTableDataAdapter(getActivity(), TABLE_DATA));
-
             final String[] row = tableAdapter.getItem(rowIndex);
-            /*String result = "";
-            for (String s : row) {
-                result = result + s + ", ";
-            }*/
-            //final int idEquipFromTbl = Integer.parseInt(row[row.length-1]);
-
-            //Log.i("WWWWW>>>>", "id de equipo a ver detalle: "+idEquipFromTbl);
             dialogEditEquipo(Integer.parseInt(row[row.length-1]));
         }
     }
 
 
-    public static boolean checkEditTextIsEmpty(EditText... editTexts)
-    {
-        try
-        {
-            for (EditText editText : editTexts)
-            {
-                if (editText.getText().toString().trim().length() == 0)
-                {
+    public static boolean checkEditTextIsEmpty(EditText... editTexts){
+        try{
+            for (EditText editText : editTexts){
+                if (editText.getText().toString().trim().length() == 0){
                     editText.requestFocus();
                     editText.setError("Este campo no puede quedar vacio");
                     return false;
                 }
             }
         }
-        catch (Exception ignored)
-        {
+        catch (Exception ignored){
             return false;
         }
         return true;
@@ -207,7 +195,10 @@ public class AdministrarEquipo extends Fragment {
     }
 
     private void dialogEditEquipo(int idEquip){
-        //2nd Alert Dialog
+        final int id_equipo = idEquip;
+
+
+        //popup para fecha
         AlertDialog.Builder alertDialogBuilderSuccess = new AlertDialog.Builder( getActivity());
         alertDialogBuilderSuccess.setTitle("TopUp Success");
         // set dialog message
@@ -223,11 +214,8 @@ public class AdministrarEquipo extends Fragment {
                             }
                         });
 
-        // create alert dialog
 
 
-
-        final int id_equipo = idEquip;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getLayoutInflater();
@@ -244,11 +232,8 @@ public class AdministrarEquipo extends Fragment {
         final EditText mTxtSerie = (EditText)dialogView.findViewById(R.id.txtEditSerie);
         final EditText mTxtCorrelInv = (EditText)dialogView.findViewById(R.id.txtEditCorrel);
         final EditText mTxtAccesorios = (EditText)dialogView.findViewById(R.id.txtEditTools);
-        final EditText mTxtFecha = (EditText)dialogView.findViewById(R.id.txtEditFecha);
+        GlobalTxtFecha = (EditText)dialogView.findViewById(R.id.txtEditFecha);
         final ListView mListEditEquip = (ListView)dialogView.findViewById(R.id.ListEditEquip);
-
-
-
 
         //para lista
         String[] values = new String[] { "Android List View",
@@ -263,9 +248,6 @@ public class AdministrarEquipo extends Fragment {
         ArrayAdapter<String> ListAdapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_list_item_1, android.R.id.text1, values);
         mListEditEquip.setAdapter(ListAdapter);
-
-
-
 
         //obteniendo informacion desde base de datos del equipo
         adapter.open();
@@ -292,9 +274,9 @@ public class AdministrarEquipo extends Fragment {
         mTxtAccesorios.setFocusable(false);
         mTxtAccesorios.setEnabled(false);
         //fecha
-        mTxtFecha.setText(mArrayList.get(4));
-        mTxtFecha.setFocusable(false);
-        mTxtFecha.setEnabled(false);
+        GlobalTxtFecha.setText(mArrayList.get(4));
+        GlobalTxtFecha.setFocusable(false);
+        GlobalTxtFecha.setEnabled(false);
         mBtnEquipDate.setEnabled(false);
 
 
@@ -303,7 +285,9 @@ public class AdministrarEquipo extends Fragment {
         mBtnEquipDate .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                alertDialogSuccess.show();
+                //alertDialogSuccess.show();
+                DatePickerFragment mDatePicker = new DatePickerFragment();
+                mDatePicker.show(getFragmentManager(), "Select date");
             }
         });
         mBtnEquipCancel .setOnClickListener(new View.OnClickListener() {
@@ -342,8 +326,6 @@ public class AdministrarEquipo extends Fragment {
                 mTxtAccesorios.setFocusable(true);
                 //fecha
                 mBtnEquipDate.setEnabled(true);
-
-
             }
         });
         mBtnEquipSave .setOnClickListener(new View.OnClickListener() {
@@ -353,5 +335,22 @@ public class AdministrarEquipo extends Fragment {
             }
         });
         dialog.show();
+    }
+
+    public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+            DatePickerDialog dpd = new DatePickerDialog(getActivity(),this, year, month, day);
+            dpd.getDatePicker().setCalendarViewShown(false);
+            return dpd;
+        }
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            //Toast.makeText(getActivity(), "Selected date: " + String.valueOf(year) + " - " + String.valueOf(month) + " - " + String.valueOf(day), Toast.LENGTH_SHORT).show();
+            GlobalTxtFecha.setText(String.valueOf(year) + " - " + String.valueOf(month) + " - " + String.valueOf(day));
+        }
     }
 }

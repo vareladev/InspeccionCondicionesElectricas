@@ -223,21 +223,21 @@
                 android:id="@+id/btnEditEquipC"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cancelar"
+                android:text="Cerrar"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"/>
             <Button
                 android:id="@+id/btnEditEquipE"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Editar Información"
+                android:text="Editar equipo"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"/>
             <Button
                 android:id="@+id/btnEditEquipG"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Guardar"
+                android:text="Eliminar Equipo"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"/>
         </LinearLayout>

@@ -3,6 +3,10 @@ package database;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -116,7 +120,7 @@ public class Adapter {
     }
 
     //Insertar registro de equipo
-    public boolean newEquip(String marca, String modelo, String serie, int correlInventario){
+    public boolean newEquip(String marca, String modelo, String serie, String fecha, int correlInventario){
         boolean result = false;
         ContentValues values = new ContentValues();
         //String sql = "insert into equipo (codigoActivo, ubicacion, nota) VALUES ('"+codigoActivo+"', '"+ubicacion+"', '"+nota+"');";
@@ -125,6 +129,7 @@ public class Adapter {
             values.put("marca", marca);
             values.put("modelo", modelo);
             values.put("serie", serie);
+            values.put("fechaCalibracion", fecha);
             values.put("numeroInventario", correlInventario);
 
             mDb.insert("equipo", null, values);
@@ -162,6 +167,40 @@ public class Adapter {
         }
     }
 
+    //actualizar tabla equipo
+    public boolean updateEquipo(String[] row) {
+        int result = 0;
+        ContentValues args = new ContentValues();
+        try {
+            args.put("marca", row[1]);
+            args.put("modelo", row[2]);
+            args.put("serie", row[3]);
+            args.put("numeroInventario", row[4]);
+            args.put("fechaCalibracion", row[5]);
+            result = mDb.update("equipo", args, "idEquipo" + "=" + row[0], null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! updateEquipo >>>>>"+ mSQLException.toString());
+        }
+        finally{
+            return result > 0;
+        }
+    }
+
+    //eliminar equipo
+    public boolean deteleteEquip(int idEquipo) {
+        int result = 0;
+        try {
+            result = mDb.delete("equipo", "idEquipo" + "=" + idEquipo, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! DelEquipo >>>>>"+ mSQLException.toString());
+        }
+        finally{
+            return result > 0;
+        }
+    }
+
     //*************************************************************************
     // CONSULTAS TABLA ACCESORIO
     //*************************************************************************
@@ -182,6 +221,38 @@ public class Adapter {
         return result;
     }
 
+    //obtener accesorios
+    public  List<String> getTools(int idEquipo){
+        String sql ="select accesorio from accesorio where idEquipo="+idEquipo+";";
+        List<String> toolsValues = new ArrayList<String>();
+        Cursor c = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "getTools >>>>>"+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                do {
+                    toolsValues.add(c.getString(0));
+                } while (c.moveToNext());
+            }
+            return toolsValues;
+        }
+    }
+    public boolean delAllTools(int idEquipo) {
+        int result = 0;
+        try {
+            result = mDb.delete("accesorio", "idEquipo" + "=" + idEquipo, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! DelEquipo >>>>>"+ mSQLException.toString());
+        }
+        finally{
+            return result > 0;
+        }
+    }
     //*************************************************************************
     // CONSULTAS GENERALES
     //*************************************************************************

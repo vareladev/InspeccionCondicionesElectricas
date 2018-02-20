@@ -8,9 +8,12 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -18,7 +21,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import database.Adapter;
 import de.codecrafters.tableview.TableView;
 import de.codecrafters.tableview.listeners.TableDataClickListener;
@@ -87,6 +95,8 @@ public class AdministrarEquipo extends Fragment {
     }
 
 
+    //*************************************************
+    //DEFINIR CAMPOS OBLIGATORIOS
     public static boolean checkEditTextIsEmpty(EditText... editTexts){
         try{
             for (EditText editText : editTexts){
@@ -103,6 +113,8 @@ public class AdministrarEquipo extends Fragment {
         return true;
     }
 
+    ////*************************************************
+    //MOSTRAR MENSAJE
     public void showMsg(Context context, String msg, int tipoMensaje){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(msg)
@@ -139,6 +151,8 @@ public class AdministrarEquipo extends Fragment {
         return true;
     }
 
+    //*************************************************
+    //AGREGAR EQUIPO
     private void dialogNewEquipo(){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getLayoutInflater();
@@ -148,14 +162,25 @@ public class AdministrarEquipo extends Fragment {
         //objetos del popup
         Button mBtnEquipCancel = (Button)dialogView.findViewById(R.id.btnEquipCancel);
         Button mBtnEquipSave = (Button)dialogView.findViewById(R.id.btnEquipGuardar);
+        Button btnEquipF = (Button)dialogView.findViewById(R.id.btnEquipF);
         final EditText mTxtMarca = (EditText)dialogView.findViewById(R.id.txtMarca);
         final EditText mTxtModelo = (EditText)dialogView.findViewById(R.id.txtModelo);
         final EditText mTxtSerie = (EditText)dialogView.findViewById(R.id.txtSerie);
         final EditText mTxtCorrelInv = (EditText)dialogView.findViewById(R.id.txtCorrelInv);
         final EditText mTxtAccesorios = (EditText)dialogView.findViewById(R.id.txtAccesorios);
+        GlobalTxtFecha = (EditText)dialogView.findViewById(R.id.txtFecha);
+        GlobalTxtFecha.setFocusable(false);
+        GlobalTxtFecha.setEnabled(false);
 
         final AlertDialog dialog = builder.create();
         //Listener de los botones guardar y cancelar
+        btnEquipF .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerFragment mDatePicker = new DatePickerFragment();
+                mDatePicker.show(getFragmentManager(), "Select date");
+            }
+        });
         mBtnEquipCancel .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -169,7 +194,8 @@ public class AdministrarEquipo extends Fragment {
                 if(checkEditTextIsEmpty(mTxtMarca, mTxtModelo)){
                     //Toast.makeText(getActivity(), "Agregar nuevo equipo", Toast.LENGTH_SHORT).show();
                     adapter.open();
-                    if(adapter.newEquip(mTxtMarca.getText().toString(),mTxtModelo.getText().toString(),mTxtSerie.getText().toString(),Integer.parseInt(mTxtCorrelInv.getText().toString()))){
+                    if(adapter.newEquip(mTxtMarca.getText().toString(),mTxtModelo.getText().toString(),mTxtSerie.getText().toString(),
+                            GlobalTxtFecha.getText().toString(),Integer.parseInt(mTxtCorrelInv.getText().toString()))){
                         int idTabla = adapter.getLastId("equipo");
 
                         //verificando y guardando accesorios
@@ -181,22 +207,25 @@ public class AdministrarEquipo extends Fragment {
                         final String[] row = {mTxtMarca.getText().toString(),mTxtModelo.getText().toString(),mTxtSerie.getText().toString(),mTxtCorrelInv.getText().toString(),null,Integer.toString(idTabla)};
                         tableAdapter.add(row);
                         tableAdapter.notifyDataSetChanged();
+                        adapter.close();
+                        dialog.dismiss();
+                        showMsg(getActivity(), "¡Nuevo equipo guardado con Éxito!", 1);
                     }
                     else{
+                        adapter.close();
+                        dialog.dismiss();
                         Toast.makeText(getActivity(), "ERROR Agregar nuevo equipo", Toast.LENGTH_SHORT).show();
                     }
-                    adapter.close();
-                    dialog.dismiss();
-                    showMsg(getActivity(), "¡Nuevo equipo guardado con Éxito!", 1);
                 }
             }
         });
         dialog.show();
     }
 
-    private void dialogEditEquipo(int idEquip){
+    //*************************************************
+    //EDITAR EQUIPO
+    private void dialogEditEquipo(final int idEquip){
         final int id_equipo = idEquip;
-
 
         //popup para fecha
         AlertDialog.Builder alertDialogBuilderSuccess = new AlertDialog.Builder( getActivity());
@@ -213,10 +242,6 @@ public class AdministrarEquipo extends Fragment {
                                 alertDialogSuccess.cancel();
                             }
                         });
-
-
-
-
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.pop_up_editar_equipo,null);
@@ -224,8 +249,8 @@ public class AdministrarEquipo extends Fragment {
 
         //objetos del popup
         Button mBtnEquipCancel = (Button)dialogView.findViewById(R.id.btnEditEquipC);
-        Button mBtnEquipSave = (Button)dialogView.findViewById(R.id.btnEditEquipG);
-        Button mBtnEquipEdit = (Button)dialogView.findViewById(R.id.btnEditEquipE);
+        Button mBtnEquipDel = (Button)dialogView.findViewById(R.id.btnEditEquipG);
+        final Button mBtnEquipEdit = (Button)dialogView.findViewById(R.id.btnEditEquipE);
         final Button mBtnEquipDate = (Button)dialogView.findViewById(R.id.btnEditEquipF);
         final EditText mTxtMarca = (EditText)dialogView.findViewById(R.id.txtEditMarca);
         final EditText mTxtModelo = (EditText)dialogView.findViewById(R.id.txtEditModel);
@@ -236,18 +261,17 @@ public class AdministrarEquipo extends Fragment {
         final ListView mListEditEquip = (ListView)dialogView.findViewById(R.id.ListEditEquip);
 
         //para lista
-        String[] values = new String[] { "Android List View",
-                "Adapter implementation",
-                "Simple List View In Android",
-                "Create List View Android",
-                "Android Example",
-                "List View Source Code",
-                "List View Array Adapter",
-                "Android Example List View"
-        };
-        ArrayAdapter<String> ListAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, values);
+        adapter.open();
+        final ArrayAdapter<String> ListAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_list_item_1, android.R.id.text1, adapter.getTools(id_equipo));
+        adapter.close();
         mListEditEquip.setAdapter(ListAdapter);
+        mListEditEquip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                popUpDelTool(position, ListAdapter);
+            }
+        });
 
         //obteniendo informacion desde base de datos del equipo
         adapter.open();
@@ -285,7 +309,6 @@ public class AdministrarEquipo extends Fragment {
         mBtnEquipDate .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //alertDialogSuccess.show();
                 DatePickerFragment mDatePicker = new DatePickerFragment();
                 mDatePicker.show(getFragmentManager(), "Select date");
             }
@@ -299,44 +322,108 @@ public class AdministrarEquipo extends Fragment {
         mBtnEquipEdit .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Marca
-                mTxtMarca.setEnabled(true);
-                mTxtMarca.setClickable(true);
-                mTxtMarca.setFocusableInTouchMode(true);
-                mTxtMarca.setFocusable(true);
-                //modelo
-                mTxtModelo.setEnabled(true);
-                mTxtModelo.setClickable(true);
-                mTxtModelo.setFocusableInTouchMode(true);
-                mTxtModelo.setFocusable(true);
-                //serie
-                mTxtSerie.setEnabled(true);
-                mTxtSerie.setClickable(true);
-                mTxtSerie.setFocusableInTouchMode(true);
-                mTxtSerie.setFocusable(true);
-                //correlativo
-                mTxtCorrelInv.setEnabled(true);
-                mTxtCorrelInv.setClickable(true);
-                mTxtCorrelInv.setFocusableInTouchMode(true);
-                mTxtCorrelInv.setFocusable(true);
-                //accesorios
-                mTxtAccesorios.setEnabled(true);
-                mTxtAccesorios.setClickable(true);
-                mTxtAccesorios.setFocusableInTouchMode(true);
-                mTxtAccesorios.setFocusable(true);
-                //fecha
-                mBtnEquipDate.setEnabled(true);
+                if(!mTxtMarca.isEnabled()){
+                    //Marca
+                    mTxtMarca.setEnabled(true);
+                    mTxtMarca.setClickable(true);
+                    mTxtMarca.setFocusableInTouchMode(true);
+                    mTxtMarca.setFocusable(true);
+                    //modelo
+                    mTxtModelo.setEnabled(true);
+                    mTxtModelo.setClickable(true);
+                    mTxtModelo.setFocusableInTouchMode(true);
+                    mTxtModelo.setFocusable(true);
+                    //serie
+                    mTxtSerie.setEnabled(true);
+                    mTxtSerie.setClickable(true);
+                    mTxtSerie.setFocusableInTouchMode(true);
+                    mTxtSerie.setFocusable(true);
+                    //correlativo
+                    mTxtCorrelInv.setEnabled(true);
+                    mTxtCorrelInv.setClickable(true);
+                    mTxtCorrelInv.setFocusableInTouchMode(true);
+                    mTxtCorrelInv.setFocusable(true);
+                    //accesorios
+                    mTxtAccesorios.setEnabled(true);
+                    mTxtAccesorios.setClickable(true);
+                    mTxtAccesorios.setFocusableInTouchMode(true);
+                    mTxtAccesorios.setFocusable(true);
+                    //fecha
+                    mBtnEquipDate.setEnabled(true);
+                    mBtnEquipEdit.setText("Guardar equipo");
+                }
+                else{
+                    //String[] updateRow = {id , marca, modelo , serie , correlativo , fechadecalibracion};/
+                    if(checkEditTextIsEmpty(mTxtMarca, mTxtModelo)){
+                        String[] updateRow = {id_equipo+"", mTxtMarca.getText().toString(),
+                                mTxtModelo.getText().toString(),null,null, null};
+                        if(TextUtils.isEmpty(mTxtSerie.getText()))
+                            updateRow[3] = null;
+                        else
+                            updateRow[3] = mTxtSerie.getText().toString();
+                        if(TextUtils.isEmpty(mTxtCorrelInv.getText()))
+                            updateRow[4] = null;
+                        else
+                            updateRow[4] = mTxtCorrelInv.getText().toString();
+                        if(TextUtils.isEmpty(GlobalTxtFecha.getText()))
+                            updateRow[5] = null;
+                        else
+                            updateRow[5] = GlobalTxtFecha.getText().toString();
+
+                        Log.e("FRAGMEN", "Guardar >>"+ Arrays.toString(updateRow));
+                        //dialog.dismiss();
+                        adapter.open();
+                        try{
+                            //eliminar todos los accesorios
+                            adapter.delAllTools(id_equipo);
+                            //actualizar los accesorios de la listview
+                            String ListToolls[] = new String[mListEditEquip.getCount()];
+                            for(int i=0; i < mListEditEquip.getCount(); i++) {
+                                ListToolls[i] = ListAdapter.getItem(i);
+                            }
+                            //guardar lista
+                            adapter.newAccessory(ListToolls,id_equipo);
+                            //verificando y guardando accesorios
+                            if (!isEmpty(mTxtAccesorios)){
+                                String[] accesorios = mTxtAccesorios.getText().toString().split(",");
+                                adapter.newAccessory(accesorios, id_equipo);
+                            }
+                            //actualizar el equipo
+                            adapter.updateEquipo(updateRow);
+                            showMsg(getActivity(), "¡Los datos del equipo han sido actualizados con Éxito!", 1);
+                        }
+                        catch (Exception e){
+                            showMsg(getActivity(), "¡Ocurrió un error al intentar actualizar la base de datos!", 2);
+                        }
+                        finally {
+                            adapter.close();
+                            dialog.dismiss();
+                            //actualizando tabla
+                            adapter.open();
+                            String[][] updatedData  = adapter.getEquipoPreview();
+                            adapter.close();
+                            tableAdapter.clear();
+                            tableAdapter.addAll(updatedData);
+                            tableAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }
             }
         });
-        mBtnEquipSave .setOnClickListener(new View.OnClickListener() {
+        mBtnEquipDel .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //dialog.dismiss();
+                AlertDialog PopUpDelAlert = popUpDelEquip(id_equipo);
+                PopUpDelAlert.show();
                 dialog.dismiss();
             }
         });
         dialog.show();
     }
 
+    //*************************************************
+    //SELECCIONAR FECHA
     public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -349,8 +436,78 @@ public class AdministrarEquipo extends Fragment {
             return dpd;
         }
         public void onDateSet(DatePicker view, int year, int month, int day) {
-            //Toast.makeText(getActivity(), "Selected date: " + String.valueOf(year) + " - " + String.valueOf(month) + " - " + String.valueOf(day), Toast.LENGTH_SHORT).show();
-            GlobalTxtFecha.setText(String.valueOf(year) + " - " + String.valueOf(month) + " - " + String.valueOf(day));
+            GlobalTxtFecha.setText(String.valueOf(year) + "-" + String.valueOf(month) + "-" + String.valueOf(day));
         }
+    }
+
+    //*************************************************
+    //ELIMINAR REGISTRO
+    public AlertDialog popUpDelEquip(final int idEquipo){
+        //popup delete
+        AlertDialog.Builder popUpDelBuilder = new AlertDialog.Builder(getActivity());
+        popUpDelBuilder.setTitle("Eliminar Registro")
+                .setMessage("¿Esta seguro que desea eliminar este registro?")
+                .setIcon(R.drawable.ic_warning)
+                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        adapter.open();
+                        try{
+                            adapter.deteleteEquip(idEquipo);
+                            showMsg(getActivity(), "¡El registro con id de equipo: "+idEquipo+", ha sido eliminado con éxito!", 1);
+                        }
+                        catch (Exception e){
+                            showMsg(getActivity(), "¡Ocurrió un error al intentar eliminar el registro en la base de datos!", 2);
+                        }
+                        finally {
+                            adapter.close();
+                            dialog.dismiss();
+                            //actualizando tabla
+                            adapter.open();
+                            String[][] updatedData  = adapter.getEquipoPreview();
+                            adapter.close();
+                            tableAdapter.clear();
+                            tableAdapter.addAll(updatedData);
+                            tableAdapter.notifyDataSetChanged();
+                        }
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog PopUpDelAlert = popUpDelBuilder.create();
+        return PopUpDelAlert;
+    }
+
+    //*************************************************
+    //ELIMINAR REGISTRO
+    public void popUpDelTool(final int position, final ArrayAdapter<String> ListAdapter){
+        //popup delete
+        AlertDialog.Builder popUpDelBuilder = new AlertDialog.Builder(getActivity());
+        popUpDelBuilder.setTitle("Eliminar Registro")
+                .setMessage("¿Esta seguro que desea eliminar el accesorio: "+ListAdapter.getItem(position)+"?")
+                .setIcon(R.drawable.ic_warning)
+                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ListAdapter.remove(ListAdapter.getItem(position));
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog PopUpDelAlert = popUpDelBuilder.create();
+        PopUpDelAlert.show();
     }
 }

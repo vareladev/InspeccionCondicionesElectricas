@@ -193,9 +193,13 @@ public class AdministrarEquipo extends Fragment {
                 //Toast.makeText(getActivity(), "Agregar nuevo equipo", Toast.LENGTH_SHORT).show();
                 if(checkEditTextIsEmpty(mTxtMarca, mTxtModelo)){
                     //Toast.makeText(getActivity(), "Agregar nuevo equipo", Toast.LENGTH_SHORT).show();
+                    int correlativo = 0;
+                    if(!TextUtils.isEmpty(mTxtCorrelInv.getText()))
+                        correlativo = Integer.parseInt(mTxtCorrelInv.getText().toString());
+
                     adapter.open();
                     if(adapter.newEquip(mTxtMarca.getText().toString(),mTxtModelo.getText().toString(),mTxtSerie.getText().toString(),
-                            GlobalTxtFecha.getText().toString(),Integer.parseInt(mTxtCorrelInv.getText().toString()))){
+                            GlobalTxtFecha.getText().toString(),correlativo)){
                         int idTabla = adapter.getLastId("equipo");
 
                         //verificando y guardando accesorios

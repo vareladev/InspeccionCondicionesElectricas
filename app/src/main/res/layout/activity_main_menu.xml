@@ -21,16 +21,16 @@
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="0dp"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginTop="0dp">
+            android:orientation="vertical">
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_margin="0dp"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:layout_margin="0dp">
+                android:orientation="horizontal">
 
 
                 <TextView
@@ -38,145 +38,139 @@
                     android:layout_height="match_parent"
                     android:layout_weight="2"
                     android:gravity="center"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:padding="20dp"
                     android:text="Menú"
+                    android:textColor="@color/colorPrimaryDark"
                     android:textSize="40dp"
-                    android:textStyle="bold"
-                    android:padding="20dp"/>
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_margin="0dp"
                 android:layout_weight="1"
                 android:orientation="horizontal"
-                android:layout_margin="0dp"
                 android:padding="10dp">
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="6"
-                    android:src="@drawable/menuicon2"
                     android:background="@color/green2"
-                    android:padding="30dp"/>
+                    android:padding="30dp"
+                    android:src="@drawable/menuicon2" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
+                    android:background="@color/green3"
                     android:gravity="center"
+                    android:padding="20dp"
                     android:text="Registrar mediciones"
                     android:textSize="40dp"
-                    android:textStyle="bold"
-                    android:background="@color/green3"
-                    android:padding="20dp"/>
+                    android:textStyle="bold" />
             </LinearLayout>
-
 
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_margin="0dp"
                 android:layout_weight="1"
                 android:orientation="horizontal"
-                android:layout_margin="0dp"
                 android:padding="10dp">
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="6"
-                    android:src="@drawable/menuicon2"
                     android:background="@color/orange1"
-                    android:padding="30dp"/>
+                    android:padding="30dp"
+                    android:src="@drawable/menuicon2" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
+                    android:background="@color/orange2"
                     android:gravity="center"
+                    android:padding="20dp"
                     android:text="Administrar Equipo"
                     android:textSize="40dp"
-                    android:textStyle="bold"
-                    android:padding="20dp"
-                    android:background="@color/orange2"/>
+                    android:textStyle="bold" />
             </LinearLayout>
 
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_margin="0dp"
                 android:layout_weight="1"
                 android:orientation="horizontal"
-                android:layout_margin="0dp"
                 android:padding="10dp">
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="6"
-                    android:src="@drawable/menuicon2"
                     android:background="@color/accent"
-                    android:padding="30dp"/>
+                    android:padding="30dp"
+                    android:src="@drawable/menuicon2" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
+                    android:background="@color/primary_light"
                     android:gravity="center"
+                    android:padding="20dp"
                     android:text="Sincronizar datos"
                     android:textSize="40dp"
-                    android:textStyle="bold"
-                    android:padding="20dp"
-                    android:background="@color/primary_light"/>
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_margin="0dp"
                 android:layout_weight="1"
                 android:orientation="horizontal"
-                android:layout_margin="0dp"
                 android:padding="10dp">
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="6"
-                    android:src="@drawable/menuicon4"
                     android:background="@color/green1"
-                    android:padding="30dp"/>
+                    android:padding="30dp"
+                    android:src="@drawable/menuicon4" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
+                    android:background="@color/green4"
                     android:gravity="center"
+                    android:padding="20dp"
                     android:text="Ópciones"
                     android:textSize="40dp"
-                    android:textStyle="bold"
-                    android:padding="20dp"
-                    android:background="@color/green4"/>
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_margin="0dp"
                 android:layout_weight="1"
                 android:orientation="horizontal"
-                android:layout_margin="0dp"
                 android:padding="10dp">
 
 
             </LinearLayout>
 
         </LinearLayout>
-
-
-
-
-
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

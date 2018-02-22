@@ -153,13 +153,24 @@ public class Home extends AppCompatActivity
     }
 
     public void openFragmentEquipo(){
-        //Toast.makeText(Home.this,"click desde fragmento :D", Toast.LENGTH_LONG).show();
-        setTitle("Administración de mediciones");
+        setTitle("Administración de equipo");
         navigationViewAux.getMenu().getItem(2).setChecked(true);
         AdministrarEquipo administrarEquipo = new AdministrarEquipo();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.fragment, administrarEquipo)
+                .addToBackStack("equipFromMenu")
+                .commit();
+        return;
+    }
+
+    public void openFragNewMed(){
+        setTitle("Inspección de instalaciones electricas y condiciones ambientales");
+        navigationViewAux.getMenu().getItem(1).setChecked(true);
+        MenuMediciones menuMediciones = new MenuMediciones();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment, menuMediciones)
                 .addToBackStack("equipFromMenu")
                 .commit();
         return;

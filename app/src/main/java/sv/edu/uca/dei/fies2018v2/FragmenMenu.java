@@ -24,14 +24,24 @@ public class FragmenMenu extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fragmen_menu, container, false);
-        LinearLayout btnEquipo = (LinearLayout) view.findViewById(R.id.Menu_boton2);
-        btnEquipo.setOnClickListener(new View.OnClickListener()
+        LinearLayout btnEquipo1 = (LinearLayout) view.findViewById(R.id.Menu_boton1);
+        LinearLayout btnEquipo2 = (LinearLayout) view.findViewById(R.id.Menu_boton2);
+        btnEquipo2.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
                 // do something
                 ((Home)getActivity()).openFragmentEquipo();
+            }
+        });
+        btnEquipo1.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                // do something
+                ((Home)getActivity()).openFragNewMed();
             }
         });
         return view;

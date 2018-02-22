@@ -1,6 +1,7 @@
 package sv.edu.uca.dei.fies2018v2;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,6 +16,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
+import com.google.gson.Gson;
+
+import Objetos.Usuario;
 import database.Adapter;
 
 
@@ -54,8 +58,12 @@ public class MainActivity extends AppCompatActivity {
 
                 if(dui.length() == 10) {
                     adapter.open();
-                    if(adapter.checkUser(dui,password)) {
-                        adapter.close();
+                    Usuario usuario = adapter.checkUser(dui,password);
+                    adapter.close();
+                    if(usuario != null) {
+                        //guardando usuario en shared preferences
+                        saveObjectToSharedPreference(MainActivity.this, "preferences", "currentUser", usuario);
+                        //abriendo nueva ventana
                         Intent toMenu = new Intent(MainActivity.this, Home.class);
                         MainActivity.this.startActivity(toMenu);
                     }
@@ -145,4 +153,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public static void saveObjectToSharedPreference(Context context, String preferenceFileName, String serializedObjectKey, Object object) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(preferenceFileName, 0);
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        final Gson gson = new Gson();
+        String serializedObject = gson.toJson(object);
+        sharedPreferencesEditor.putString(serializedObjectKey, serializedObject);
+        sharedPreferencesEditor.apply();
+    }
 }

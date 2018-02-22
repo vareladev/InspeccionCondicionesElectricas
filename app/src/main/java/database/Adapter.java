@@ -13,7 +13,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
+
+import Objetos.*;
 
 public class Adapter {
     protected static final String TAG = "DataAdapter";
@@ -66,13 +70,13 @@ public class Adapter {
 
     //CONSULTAS A BASE DE DATOS
     //SQL login
-    public boolean checkUser(String dui, String pass) {
-        boolean foundUser = false;
-        String sql ="select * from usuario where dui = '"+dui+"' and pass ='"+pass+"';";
+    public Usuario checkUser(String dui, String pass) {
+        String sql ="select idUsuario, dui, nombre from usuario where dui = '"+dui+"' and pass ='"+pass+"';";
+        Usuario usuario = null;
         try{
             Cursor c = mDb.rawQuery(sql, null);
             if(c.moveToFirst()){
-                foundUser = true;
+                usuario = new Usuario(c.getInt(0)+"",c.getString(1),c.getString(2));
             }
         }
         catch (SQLException mSQLException){
@@ -80,10 +84,13 @@ public class Adapter {
             throw mSQLException;
         }
         finally {
-            return foundUser;
+            return usuario;
         }
     }
 
+    //*************************************************************************
+    // CONSULTAS TABLA EQUIPO
+    //*************************************************************************
     //obtener equipo version light
     public String[][] getEquipoPreview(){
         String sql ="select marca, modelo, serie, numeroInventario, fechaCalibracion, idEquipo from equipo;";
@@ -200,7 +207,28 @@ public class Adapter {
             return result > 0;
         }
     }
+    //obtener detalle de equipo
+    public ArrayList<Equipo> getEquipsForList(){
+        String sql ="select idEquipo, marca from equipo;";
 
+        ArrayList<Equipo> EquipList = new ArrayList<>();
+        Cursor c = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! getEquipsForList >>>>>"+ mSQLException.toString());
+        }
+        finally {
+
+            if (c.moveToFirst()) {
+                do {
+                    EquipList.add(new Equipo(c.getInt(0)+"", c.getString(1)));
+                } while (c.moveToNext());
+            }
+            return EquipList;
+        }
+    }
     //*************************************************************************
     // CONSULTAS TABLA ACCESORIO
     //*************************************************************************
@@ -253,6 +281,104 @@ public class Adapter {
             return result > 0;
         }
     }
+    //*************************************************************************
+    // CONSULTAS ENTIDAD HOSPITAL
+    //*************************************************************************
+    //obtener detalle de equipo
+    public ArrayList<Hospital> getHospitals(){
+        String sql ="select idHospital, nombre from hospital;";
+
+        ArrayList<Hospital> hospitalList = new ArrayList<>();
+        //ArrayList<String> mArrayList = new ArrayList<String>();
+        Cursor c = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! getHospitals >>>>>"+ mSQLException.toString());
+        }
+        finally {
+
+            if (c.moveToFirst()) {
+                do {
+                    hospitalList.add(new Hospital(c.getInt(0)+"", c.getString(1)));
+                } while (c.moveToNext());
+            }
+            return hospitalList;
+        }
+    }
+
+    //*************************************************************************
+    // CONSULTAS TABLA AREA
+    //*************************************************************************
+    //obtener lista de areas
+    public ArrayList<Area> getAreas(String idHospital){
+        String sql ="select idArea, nombreArea, plano, idHospital from area Where idHospital = '"+idHospital+"';";
+        ArrayList<Area> AreasList = new ArrayList<>();
+        byte[] byteArray;
+        Bitmap plano;
+        //ArrayList<String> mArrayList = new ArrayList<String>();
+        Cursor c = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! getAreas >>>>>"+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                do {
+                    //obteniendo blob
+                    byteArray = c.getBlob(2);
+                    //convirtiendo a bitmap
+                    plano = BitmapFactory.decodeByteArray(byteArray, 0 ,byteArray.length);
+                    //agregando area a arreglo
+                    AreasList.add(new Area(c.getInt(0)+"", c.getString(1),plano,c.getInt(3)+""));
+                } while (c.moveToNext());
+            }
+            return AreasList;
+        }
+    }
+
+    //*************************************************************************
+    // CONSULTAS TABLA MEDICION
+    //*************************************************************************
+    //crear nuevo registro
+    public boolean mewMeasurement(NuevaMedicion nuevaMedicion){
+        boolean result = false;
+        ContentValues values = new ContentValues();
+        try{
+            values.put("servicioAnalizado", nuevaMedicion.getServicioAnalizado());
+            values.put("responsable", nuevaMedicion.getResponsable());
+            values.put("telefono", nuevaMedicion.getTelefono());
+            values.put("idArea", nuevaMedicion.getIdArea());
+            values.put("idUsuario", nuevaMedicion.getIdUsuario());
+            mDb.insert("medicion", null, values);
+            result = true;
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "Adapter>mewMeasurement >>"+ mSQLException.toString());
+        }
+        return result;
+    }
+    //*************************************************************************
+    // CONSULTAS TABLA MXE
+    //crear nuevo registro
+    public boolean newMxeReg(int idMedicion, Equipo e){
+        boolean result = false;
+        ContentValues values = new ContentValues();
+        try{
+            values.put("idMedicion", idMedicion);
+            values.put("idEquipo", e.getId());
+            mDb.insert("mxe", null, values);
+            result = true;
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "Adapter>newMxeReg >>"+ mSQLException.toString());
+        }
+        return result;
+    }
+    //*************************************************************************
     //*************************************************************************
     // CONSULTAS GENERALES
     //*************************************************************************

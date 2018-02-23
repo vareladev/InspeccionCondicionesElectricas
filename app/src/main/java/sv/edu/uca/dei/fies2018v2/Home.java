@@ -20,30 +20,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
-public class Home extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class Home extends AppCompatActivity{
 
-    NavigationView navigationViewAux;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        navigationViewAux = navigationView;
         //cargando fragmento Menu
         FragmenMenu fm = new FragmenMenu();
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -70,91 +59,12 @@ public class Home extends AppCompatActivity
         }*/
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_home) {
-            //cargando fragmento Menu
-            setTitle("Home");
-            FragmenMenu fm = new FragmenMenu();
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().
-                    replace(R.id.fragment, fm)
-                    .addToBackStack("Home")
-                    .commit();
-        } else if (id == R.id.nav_mediciones) {
-            setTitle("Administración de mediciones");
-            MenuMediciones menuMediciones = new MenuMediciones();
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.fragment, menuMediciones)
-                    .addToBackStack("Mediciones")
-                    .commit();
-        } else if (id == R.id.nav_equipos) {
-            //cargando fragmento administrar equipo
-            setTitle("Equipo");
-            AdministrarEquipo administrarEquipo = new AdministrarEquipo();
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.fragment, administrarEquipo)
-                    .addToBackStack("Equipo")
-                    .commit();
-        } else if (id == R.id.nav_nube) {
 
 
-
-
-
-
-
-
-
-        } else if (id == R.id.nav_settings) {
-            //cargando fragmento opciones
-            setTitle("Opciones");
-            Opciones opciones = new Opciones();
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.fragment, opciones)
-                    .addToBackStack("Opciones")
-                    .commit();
-        } else if (id == R.id.nav_sesion) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 
     public void openFragmentEquipo(){
         setTitle("Administración de equipo");
-        navigationViewAux.getMenu().getItem(2).setChecked(true);
+
         AdministrarEquipo administrarEquipo = new AdministrarEquipo();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
@@ -166,12 +76,26 @@ public class Home extends AppCompatActivity
 
     public void openFragNewMed(){
         setTitle("Inspección de instalaciones electricas y condiciones ambientales");
-        navigationViewAux.getMenu().getItem(1).setChecked(true);
+
         MenuMediciones menuMediciones = new MenuMediciones();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.fragment, menuMediciones)
                 .addToBackStack("equipFromMenu")
+                .commit();
+        return;
+    }
+
+
+    public void openVarRegMed(){
+        setTitle("Inspección de instalaciones electricas y condiciones ambientales");
+
+        FragmentMedMenu fragmentMedMenu = new FragmentMedMenu();
+        //MenuMediciones menuMediciones = new MenuMediciones();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment, fragmentMedMenu)
+                .addToBackStack("fragmentMedMenu")
                 .commit();
         return;
     }

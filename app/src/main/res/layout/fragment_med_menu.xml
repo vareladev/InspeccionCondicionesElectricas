@@ -8,16 +8,16 @@
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:gravity="center">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:gravity="center"
-            android:textColor="@color/colorPrimaryDark"
-            android:text="Menú"
-            android:textSize="40dp"
-            android:textStyle="bold"
-            android:padding="20dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:textColor="@color/colorPrimaryDark"
+                android:text="Registro de inspección"
+                android:textSize="40dp"
+                android:textStyle="bold"
+                android:padding="20dp"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,7 +37,6 @@
                 android:paddingLeft="150dp"
                 android:paddingRight="25dp">
                 <LinearLayout
-                    android:id="@+id/Menu_boton1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
@@ -45,7 +44,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="2"
-                        android:src="@drawable/main_menu_1_3"
+                        android:src="@drawable/second_menu_1"
                         android:background="@color/white"
                         android:padding="30dp"/>
                     <TextView
@@ -53,8 +52,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="0.5"
-                        android:text="Nuevo registro"
-                        android:textSize="30sp"
+                        android:text="Seguridad eléctrica"
+                        android:textSize="25sp"
                         android:textColor="@color/colorPrimaryDark"
                         android:textStyle="bold"
                         android:background="@color/white"/>
@@ -75,7 +74,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="2"
-                        android:src="@drawable/main_menu_2_2"
+                        android:src="@drawable/second_menu_2"
                         android:background="@color/white"
                         android:padding="30dp"/>
                     <TextView
@@ -83,8 +82,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="0.5"
-                        android:text="Historial"
-                        android:textSize="30sp"
+                        android:text="Iluminación Ambiental"
+                        android:textSize="25sp"
                         android:textColor="@color/colorPrimaryDark"
                         android:textStyle="bold"
                         android:background="@color/white"/>
@@ -105,7 +104,6 @@
                 android:paddingLeft="150dp"
                 android:paddingRight="25dp">
                 <LinearLayout
-                    android:id="@+id/Menu_boton2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
@@ -113,7 +111,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="2"
-                        android:src="@drawable/main_menu_3_2"
+                        android:src="@drawable/second_menu_3"
                         android:background="@color/white"
                         android:padding="30dp"/>
                     <TextView
@@ -121,8 +119,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="0.5"
-                        android:text="Equipo"
-                        android:textSize="30sp"
+                        android:text="Iluminación campo operatorio"
+                        android:textSize="25sp"
                         android:textColor="@color/colorPrimaryDark"
                         android:textStyle="bold"
                         android:background="@color/white"/>
@@ -143,7 +141,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="2"
-                        android:src="@drawable/main_menu_4_2"
+                        android:src="@drawable/second_menu_4"
                         android:background="@color/white"
                         android:padding="30dp"/>
                     <TextView
@@ -151,8 +149,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="0.5"
-                        android:text="Sincronizar"
-                        android:textSize="30sp"
+                        android:text="Ruido ambiental"
+                        android:textSize="25sp"
                         android:textColor="@color/colorPrimaryDark"
                         android:textStyle="bold"
                         android:background="@color/white"/>
@@ -181,7 +179,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="2"
-                        android:src="@drawable/main_menu_5"
+                        android:src="@drawable/second_menu_5"
                         android:background="@color/white"
                         android:padding="30dp"/>
                     <TextView
@@ -189,8 +187,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="0.5"
-                        android:text="Exportar"
-                        android:textSize="30sp"
+                        android:text="Temperatura ambiental"
+                        android:textSize="25sp"
                         android:textColor="@color/colorPrimaryDark"
                         android:textStyle="bold"
                         android:background="@color/white"/>
@@ -211,7 +209,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="2"
-                        android:src="@drawable/main_menu_3"
+                        android:src="@drawable/second_menu_6_2"
                         android:background="@color/white"
                         android:padding="30dp"/>
                     <TextView
@@ -219,8 +217,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="0.5"
-                        android:text="Ópciones"
-                        android:textSize="30sp"
+                        android:text="Humedad relativa ambiental"
+                        android:textSize="25sp"
                         android:textColor="@color/colorPrimaryDark"
                         android:textStyle="bold"
                         android:background="@color/white"/>

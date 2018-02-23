@@ -67,7 +67,7 @@ public class MenuMediciones extends Fragment {
         final ImageView mImgNuevaMedArea = (ImageView) view.findViewById(R.id.imgNuevaMedArea);
         Button mBtnPlusEquip = (Button) view.findViewById(R.id.btnPlusEquip);
         Button mBtnMinusEquip = (Button) view.findViewById(R.id.btnMinusEquip);
-        Button mBtnNuevaMedicion = (Button) view.findViewById(R.id.btnNuevaMedicion);
+        final Button mBtnNuevaMedicion = (Button) view.findViewById(R.id.btnNuevaMedicion);
         final EditText mTxtNewMedServicio = (EditText) view.findViewById(R.id.txtNewMedServicio);
         final EditText mTxtNewMedResp = (EditText) view.findViewById(R.id.txtNewMedResp);
 
@@ -110,7 +110,11 @@ public class MenuMediciones extends Fragment {
                 spinAreaAdapter.notifyDataSetChanged();
                 //cambiando imagen
                 mImgNuevaMedArea.setImageBitmap(AreasList.get(0).getPlano());
-                //Toast.makeText(getContext(), "hospital ID: "+hospital.getId()+",  hospital Name : "+hospital.getHospital(), Toast.LENGTH_SHORT).show();
+                if(position == 0)
+                    mBtnNuevaMedicion.setEnabled(false);
+                else
+                    mBtnNuevaMedicion.setEnabled(true);
+
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -203,6 +207,7 @@ public class MenuMediciones extends Fragment {
         mBtnNuevaMedicion .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean res = true;
                 String idArea = ((Area) mSpinAreas.getSelectedItem()).getId();
                 NuevaMedicion nuevaMedicion = new NuevaMedicion(currentUser.getId(), idArea, mTxtNewMedServicio.getText().toString(), mTxtNewMedResp.getText().toString(), "0000-0000");
                 //equipList2
@@ -213,9 +218,16 @@ public class MenuMediciones extends Fragment {
                     for (Equipo e : equipList2) {
                         if (!adapter.newMxeReg(idMedicion, e)){
                             showMsg(getActivity(),"¡Error! El registro de nueva medición no se esta guardando correctamente, existe un problema con la asignación de equipo a la medición.",2);
+                            res = false;
+                            break;
                         }
                     }
-                    showMsg(getActivity(),"¡El nuevo registro ha sido creado correctamente, ahora puede realizar la inspeción de instalaciones electricas y condiciones ambientales",1);
+                    if(res){
+                        //Log.v("new","ultimo id de medicion: "+adapter.getLastId("medicion")+", ultimo id de mxe: "+adapter.getLastId("mxe"));
+                        showMsg(getActivity(),"¡El nuevo registro ha sido creado correctamente, ahora puede realizar la inspeción de instalaciones electricas y condiciones ambientales",1);
+                        ((Home)getActivity()).openVarRegMed();
+                    }
+
                 }
                 else{ //algo falló
                     showMsg(getActivity(),"¡Error! No se pudo crear el registro de nueva medición",2);

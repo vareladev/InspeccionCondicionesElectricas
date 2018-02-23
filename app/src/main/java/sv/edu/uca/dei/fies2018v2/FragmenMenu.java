@@ -41,7 +41,8 @@ public class FragmenMenu extends Fragment {
             public void onClick(View v)
             {
                 // do something
-                ((Home)getActivity()).openFragNewMed();
+                //((Home)getActivity()).openFragNewMed();
+                ((Home)getActivity()).openVarRegMed();
             }
         });
         return view;

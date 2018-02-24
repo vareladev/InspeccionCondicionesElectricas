@@ -37,6 +37,7 @@
                 android:paddingLeft="150dp"
                 android:paddingRight="25dp">
                 <LinearLayout
+                    android:id="@+id/getElecData"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">

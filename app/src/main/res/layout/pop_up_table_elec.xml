@@ -4,11 +4,12 @@
     android:layout_height="400dp"
     android:orientation="vertical">
 
+
     <TextView
         android:id="@+id/PopUpTitle"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="Verificación de seguridad electrica"
+        android:text="Verificación de seguridad electrica "
         android:textColor="@color/white"
         android:paddingLeft="20dp"
         android:textSize="20sp"
@@ -33,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Receptáculo R1"
+                android:text="registros"
                 android:textSize="20sp"
                 android:layout_marginBottom="20dp"/>
         </LinearLayout>

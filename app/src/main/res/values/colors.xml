@@ -6,6 +6,7 @@
     <color name="primary_dark">#1976D2</color>
     <color name="table_header">#2980b9</color>
     <color name="primary">#2196F3</color>
+    <color name="icon_blue">#00a1f1</color>
     <color name="accent">#079be2</color>
     <color name="primary_light">#ebf9ff</color>
     <color name="primary_text">#212121</color>
@@ -17,15 +18,18 @@
     <color name="light_gray">#F2F4F4</color>
     <color name="icons">#FFFFFF</color>
     <color name="green1">#03988e</color>
-    <color name="colorAccent">#03988e</color>
+    <color name="colorAccent">#28cd7e</color>
     <color name="green2">#239b24</color>
+    <color name="icon_green">#28cd7e</color>
     <color name="green3">#f1fff1</color>
     <color name="green4">#e3fffd</color>
     <color name="darkred">#660000</color>
     <color name="red">#ff0000</color>
     <color name="cancel">#E74C3C</color>
     <color name="orange1">#df7215</color>
+    <color name="icon_orange">#ffb432</color>
     <color name="orange2">#ffefe2</color>
+
 
 
 

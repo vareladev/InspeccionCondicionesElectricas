@@ -5,22 +5,21 @@
     tools:context="sv.edu.uca.dei.fies2018v2.MenuMediciones"
     android:orientation="vertical">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:background="@color/white">
-
+        android:layout_height="100dp"
+        android:gravity="center">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_weight="2"
             android:gravity="center"
             android:textColor="@color/colorPrimaryDark"
-            android:text="Nuevo registro"
-            android:textSize="30dp"
-            android:textStyle="bold"/>
-
+            android:text="Registrar nueva inspección"
+            android:textSize="40dp"
+            android:textStyle="bold"
+            android:padding="20dp"
+            android:background="@color/white"/>
     </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -44,7 +43,7 @@
                 android:text="Información general:"
                 android:textSize="@dimen/subtitle"
                 android:textStyle="bold"
-                android:textColor="@color/colorPrimaryDark"/>
+                android:textColor="@color/accent"/>
         </LinearLayout>
         <View
             android:layout_width="match_parent"
@@ -53,7 +52,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -88,8 +87,9 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="45dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -115,15 +115,17 @@
                 <EditText
                     android:id="@+id/txtNewMedServicio"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent"
+                    android:background="@color/table_even"/>
             </LinearLayout>
         </LinearLayout>
 
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="45dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -135,7 +137,8 @@
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:text="Responsable:"
-                    android:textSize="@dimen/nueva_medicion" />
+                    android:textSize="@dimen/nueva_medicion"
+                    />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="0dp"
@@ -147,7 +150,8 @@
                 <EditText
                     android:id="@+id/txtNewMedResp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="match_parent"
+                    android:background="@color/table_even"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -164,7 +168,7 @@
                 android:text="Área de trabajo:"
                 android:textSize="@dimen/subtitle"
                 android:textStyle="bold"
-                android:textColor="@color/colorPrimaryDark"/>
+                android:textColor="@color/accent"/>
         </LinearLayout>
         <View
             android:layout_width="match_parent"
@@ -173,7 +177,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="45dp"
             android:orientation="horizontal">
             <LinearLayout
                 android:layout_width="0dp"
@@ -210,7 +214,7 @@
                 android:id="@+id/imgNuevaMedArea"
                 android:layout_width="400dp"
                 android:layout_height="243dp"
-                android:background="@color/white"/>
+                android:background="@color/table_even"/>
         </LinearLayout>
 
 
@@ -227,7 +231,7 @@
                 android:text="Equipo de medición:"
                 android:textSize="@dimen/subtitle"
                 android:textStyle="bold"
-                android:textColor="@color/colorPrimaryDark"/>
+                android:textColor="@color/accent"/>
         </LinearLayout>
         <View
             android:layout_width="match_parent"
@@ -275,13 +279,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/greater_than"
-                    android:layout_margin="5dp"/>
+                    android:layout_margin="5dp"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:textSize="30sp"
+                    android:background="@drawable/shape_ok_button"/>
                 <Button
                     android:id="@+id/btnMinusEquip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/less_than"
-                    android:layout_margin="5dp"/>
+                    android:layout_margin="5dp"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:textSize="30sp"
+                    android:background="@drawable/shape_ok_button"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="0dp"
@@ -307,9 +319,13 @@
             android:gravity="center">
             <Button
                 android:id="@+id/btnNuevaMedicion"
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Nuevo registro"/>
+                android:text="Nuevo registro"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:background="@drawable/shape_round_corners"/>
         </LinearLayout>
 
 

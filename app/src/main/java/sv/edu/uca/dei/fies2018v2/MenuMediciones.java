@@ -110,10 +110,14 @@ public class MenuMediciones extends Fragment {
                 spinAreaAdapter.notifyDataSetChanged();
                 //cambiando imagen
                 mImgNuevaMedArea.setImageBitmap(AreasList.get(0).getPlano());
-                if(position == 0)
+                if(position == 0){
                     mBtnNuevaMedicion.setEnabled(false);
-                else
+                    mBtnNuevaMedicion.setBackground(getResources().getDrawable(R.drawable.shape_disabled_button));
+                }
+                else {
                     mBtnNuevaMedicion.setEnabled(true);
+                    mBtnNuevaMedicion.setBackground(getResources().getDrawable(R.drawable.shape_round_corners));
+                }
 
             }
             @Override
@@ -134,7 +138,7 @@ public class MenuMediciones extends Fragment {
                     if(position == i ){
                         ListItemFromLeft = (Equipo) equipList.get(position);
                         //Toast.makeText(getContext(), "equipo ID: "+ultimoEquipSeleccionado.getId()+",  equipo Name : "+ultimoEquipSeleccionado.getEquipo(), Toast.LENGTH_SHORT).show();
-                        mlistEquipFromDB.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.primary_light));
+                        mlistEquipFromDB.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.table_odd));
                     }else{
                         mlistEquipFromDB.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
                     }
@@ -152,7 +156,7 @@ public class MenuMediciones extends Fragment {
                 for (int i = 0; i < mlistEquipFromSelected.getChildCount(); i++) {
                     if(position == i ){
                         ListItemFromRight = (Equipo) equipList2.get(position);
-                        mlistEquipFromSelected.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.primary_light));
+                        mlistEquipFromSelected.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.table_odd));
                     }else{
                         mlistEquipFromSelected.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
                     }

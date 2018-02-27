@@ -68,6 +68,7 @@
                 android:paddingLeft="25dp"
                 android:paddingRight="150dp">
                 <LinearLayout
+                    android:id="@+id/getLuxData"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
@@ -105,6 +106,7 @@
                 android:paddingLeft="150dp"
                 android:paddingRight="25dp">
                 <LinearLayout
+                    android:id="@+id/getLuxRoomData"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
@@ -135,6 +137,7 @@
                 android:paddingLeft="25dp"
                 android:paddingRight="150dp">
                 <LinearLayout
+                    android:id="@+id/getNoiseData"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
@@ -173,6 +176,7 @@
                 android:paddingLeft="150dp"
                 android:paddingRight="25dp">
                 <LinearLayout
+                    android:id="@+id/getTempData"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
@@ -203,6 +207,7 @@
                 android:paddingLeft="25dp"
                 android:paddingRight="150dp">
                 <LinearLayout
+                    android:id="@+id/getHumData"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">

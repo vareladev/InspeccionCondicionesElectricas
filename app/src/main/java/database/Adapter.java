@@ -2,6 +2,7 @@ package database;
 
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -379,6 +380,143 @@ public class Adapter {
         return result;
     }
     //*************************************************************************
+    // CONSULTAS TABLA VARIABLE
+    //crear nuevo registro
+    public boolean newVariable(int idMedicion, float valor ,int tipo, int isok){
+        boolean result = false;
+        ContentValues values = new ContentValues();
+        try{
+            values.put("idMedicion", idMedicion);
+            if(tipo != 1){ //medicion electrica
+                values.put("valor", valor);
+                values.put("cumple", isok);
+            }
+            values.put("tipo", tipo);
+            mDb.insert("variable", null, values);
+            result = true;
+            Log.v("Adapter>newVariable >>", "Registro de variable Exitoso!!");
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "Adapter>newVariable >>"+ mSQLException.toString());
+        }
+        return result;
+    }
+    //contar numero de receptaculos electricos
+    public int countReceptacles(int idMedicion){
+        String sql ="select count(*) from variable Where idMedicion = "+idMedicion+" and tipo = 1;";
+        Cursor c = null;
+        int countReceptacles = 0;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! countReceptacles >>>>>"+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                countReceptacles = c.getInt(0);
+            }
+            return countReceptacles;
+        }
+    }
+    public  ArrayList<String[]> getVariableList(int idMedicion, int tipo){
+        String[] variableRow;
+        ArrayList<String[]> variableList = new ArrayList<String[]>();
+        String sql = "select valor, cumple from variable where idMedicion = "+idMedicion+" and tipo ="+tipo+";";
+        Cursor c = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR-getVariableList"+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                int contador = 0;
+                do {
+                    contador ++;
+                    variableRow = new String[3];
+                    variableRow[0] = contador+"";
+                    variableRow[1] = c.getFloat(0)+"";
+                    variableRow[2] = c.getInt(1)+"";
+                    variableList.add(variableRow);
+                } while (c.moveToNext());
+            }
+            return variableList;
+        }
+    }
+    public boolean newVariableCon(int idMedicion, float valor ,int tipo, int isok){
+        boolean result = false;
+        ContentValues values = new ContentValues();
+        try{
+            values.put("idMedicion", idMedicion);
+            values.put("valor", valor);
+            values.put("cumple", isok);
+            values.put("tipo", tipo);
+            mDb.insert("variable", null, values);
+            result = true;
+            Log.v("Adapter>newVariable >>", "Registro de variable Exitoso!!");
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "Adapter>newVariableCon"+ mSQLException.toString());
+        }
+        return result;
+    }
+    //*************************************************************************
+    // CONSULTAS TABLA SUBVARIABLE
+    //crear nuevo registro
+    public boolean newSubVariable(int idVariable, float polaridad, float vfaseneutro ,float vneutrotierra, float vfasetierra){
+        boolean result = false;
+        ContentValues values = new ContentValues();
+        try{
+            values.put("idVariable", idVariable);
+            values.put("polaridad", polaridad);
+            values.put("vfaseneutro", vfaseneutro);
+            values.put("vneutrotierra", vneutrotierra);
+            values.put("vfasetierra", vfasetierra);
+            mDb.insert("subvariable", null, values);
+            result = true;
+            Log.v("Adptr>newSubVariable:", "Registro de variable Exitoso!!");
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "Adapter>newSubVariable >>"+ mSQLException.toString());
+        }
+        return result;
+    }
+    public ArrayList<String[]> getSubVariableList(int idMedicion){
+        String[] subVariableRow;
+        ArrayList<String[]> subVariableList = new ArrayList<String[]>();
+        String sql2 = "select subvariable.polaridad, subvariable.vfaseneutro, subvariable.vneutrotierra, subvariable.vfasetierra , subvariable.idSubVariable" +
+                " from medicion, variable, subvariable" +
+                " where medicion.idMedicion = variable.idMedicion" +
+                " and variable.idVariable = subvariable.idVariable" +
+                " and variable.tipo = 1" +
+                " and medicion.idMedicion = "+idMedicion+
+                " order by  subvariable.idSubVariable asc;";
+        Cursor c = null;
+        try{
+            c = mDb.rawQuery(sql2, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR-getSubVariableList"+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                int contador = 0;
+                do {
+                    contador ++;
+                    subVariableRow = new String[5];
+                    subVariableRow[0] = contador+"";
+                    subVariableRow[1] = c.getFloat(0)+"";
+                    subVariableRow[2] = c.getFloat(1)+"";
+                    subVariableRow[3] = c.getFloat(2)+"";
+                    subVariableRow[4] = c.getFloat(3)+"";
+                    subVariableList.add(subVariableRow);
+                } while (c.moveToNext());
+            }
+            return subVariableList;
+        }
+    }
     //*************************************************************************
     // CONSULTAS GENERALES
     //*************************************************************************

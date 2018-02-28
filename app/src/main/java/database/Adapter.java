@@ -539,6 +539,38 @@ public class Adapter {
             return idTable;
         }
     }
+
+    public ArrayList<String[]> getMeasuresList(){
+        String[] measureRow;
+        ArrayList<String[]> measureList = new ArrayList<String[]>();
+        String sql2 = "select hospital.seudo, area.nombreArea, medicion.fecha, medicion.idMedicion " +
+                "from hospital, area, medicion " +
+                "where hospital.idHospital = area.idHospital and area.idArea = medicion.idArea;";
+        /*String sql2 = "select hospital.seudo, area.nombreArea " +
+                "from hospital, area " +
+                "where hospital.idHospital = area.idHospital;";*/
+        Cursor c = null;
+        try{
+            c = mDb.rawQuery(sql2, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR-getMeasuresList"+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                do {
+                    measureRow = new String[5];
+                    measureRow[0] = c.getString(0);
+                    measureRow[1] = c.getString(1);
+                    measureRow[2] = c.getString(2);
+                    measureRow[3] = "No";
+                    measureRow[4] = c.getInt(3)+"";
+                    measureList.add(measureRow);
+                } while (c.moveToNext());
+            }
+            return measureList;
+        }
+    }
 /*
     public Cursor getTestData()
     {

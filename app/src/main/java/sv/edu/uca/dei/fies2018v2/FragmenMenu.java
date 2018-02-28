@@ -24,15 +24,24 @@ public class FragmenMenu extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fragmen_menu, container, false);
-        LinearLayout btnEquipo1 = (LinearLayout) view.findViewById(R.id.Menu_boton1);
-        LinearLayout btnEquipo2 = (LinearLayout) view.findViewById(R.id.Menu_boton2);
+        LinearLayout btnEquipo1 = (LinearLayout) view.findViewById(R.id.Menu_boton1); //nuevo registro
+        LinearLayout btnEquipo3 = (LinearLayout) view.findViewById(R.id.Menu_boton3); //history
+        LinearLayout btnEquipo2 = (LinearLayout) view.findViewById(R.id.Menu_boton2); //equipo
         btnEquipo2.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                // do something
                 ((Home)getActivity()).openFragmentEquipo();
+            }
+        });
+        btnEquipo3.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ((Home)getActivity()).openFragmentHistory();
+                //((Home)getActivity()).openVarRegMed();
             }
         });
         btnEquipo1.setOnClickListener(new View.OnClickListener()
@@ -40,11 +49,12 @@ public class FragmenMenu extends Fragment {
             @Override
             public void onClick(View v)
             {
-                // do something
                 ((Home)getActivity()).openFragNewMed();
                 //((Home)getActivity()).openVarRegMed();
             }
         });
+
+
         return view;
 
     }

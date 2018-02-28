@@ -60,7 +60,17 @@ public class Home extends AppCompatActivity{
     }
 
 
+    public void openFragmentHistory(){
+        setTitle("Administración de inspecciones de seguridad");
 
+        Fragment_history_med fragment_history_med = new Fragment_history_med();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment, fragment_history_med)
+                .addToBackStack("fragmentInspeccion")
+                .commit();
+        return;
+    }
 
     public void openFragmentEquipo(){
         setTitle("Administración de equipo");

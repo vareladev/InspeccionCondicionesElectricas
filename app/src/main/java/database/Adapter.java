@@ -230,6 +230,36 @@ public class Adapter {
             return EquipList;
         }
     }
+
+    //obtener detalle de equipo
+    public ArrayList<Equipo> getEquipForEdit(int idMedicion, boolean equals){
+        String sql;
+
+        if (equals)
+            sql ="select mxe.idEquipo, equipo.marca from mxe,equipo where mxe.idEquipo = equipo.idEquipo and mxe.idMedicion == "+idMedicion+";";
+        else
+            sql ="select mxe.idEquipo, equipo.marca from mxe,equipo where mxe.idEquipo = equipo.idEquipo and mxe.idMedicion <> "+idMedicion+";";
+            //sql ="select mxe.idEquipo, equipo.marca from mxe,equipo where mxe.idEquipo = equipo.idEquipo and mxe.idMedicion = "+idMedicion+";";
+
+        ArrayList<Equipo> EquipList = new ArrayList<>();
+        Cursor c = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! getEquipForEdit: "+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                do {
+                    EquipList.add(new Equipo(c.getInt(0)+"", c.getString(1)));
+                } while (c.moveToNext());
+            }
+            return EquipList;
+        }
+
+
+    }
     //*************************************************************************
     // CONSULTAS TABLA ACCESORIO
     //*************************************************************************
@@ -309,6 +339,24 @@ public class Adapter {
         }
     }
 
+    public String getHospitalName (int idHospital){
+        final String sql ="select nombre from hospital where idHospital = "+idHospital+";";
+        String hospitalName = null;
+        Cursor c = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "getHospitalName >"+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                hospitalName = c.getString(0);
+            }
+            return hospitalName;
+        }
+    }
+
     //*************************************************************************
     // CONSULTAS TABLA AREA
     //*************************************************************************
@@ -341,6 +389,29 @@ public class Adapter {
         }
     }
 
+    public Area getArea (int idArea){
+        final String sql ="select nombreArea, plano from area where idArea = "+idArea+";";
+        Cursor c = null;
+        Area area = null;
+        byte[] byteArray;
+        Bitmap plano;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "getAreaName >"+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                //convirtiendo a bitmap
+                byteArray = c.getBlob(1);
+                plano = BitmapFactory.decodeByteArray(byteArray, 0 ,byteArray.length);
+                area = new Area(null, c.getString(0),plano,null);
+            }
+            return area;
+        }
+    }
+
     //*************************************************************************
     // CONSULTAS TABLA MEDICION
     //*************************************************************************
@@ -362,6 +433,26 @@ public class Adapter {
         }
         return result;
     }
+
+    //crear nuevo registro
+    public NuevaMedicion getMeasure(int idMedicion){
+        final String sql ="select servicioAnalizado, responsable from medicion where idMedicion = "+idMedicion+";";
+        Cursor c = null;
+        NuevaMedicion nuevaMedicion = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "getMeasure >"+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                //convirtiendo a bitmap
+                nuevaMedicion = new NuevaMedicion(null, null, c.getString(0), c.getString(1), null);
+            }
+            return nuevaMedicion;
+        }
+    }
     //*************************************************************************
     // CONSULTAS TABLA MXE
     //crear nuevo registro
@@ -379,6 +470,8 @@ public class Adapter {
         }
         return result;
     }
+
+
     //*************************************************************************
     // CONSULTAS TABLA VARIABLE
     //crear nuevo registro
@@ -543,12 +636,9 @@ public class Adapter {
     public ArrayList<String[]> getMeasuresList(){
         String[] measureRow;
         ArrayList<String[]> measureList = new ArrayList<String[]>();
-        String sql2 = "select hospital.seudo, area.nombreArea, medicion.fecha, medicion.idMedicion " +
+        String sql2 = "select hospital.seudo, area.nombreArea, medicion.fecha, medicion.idMedicion, hospital.idHospital, area.idArea " +
                 "from hospital, area, medicion " +
                 "where hospital.idHospital = area.idHospital and area.idArea = medicion.idArea;";
-        /*String sql2 = "select hospital.seudo, area.nombreArea " +
-                "from hospital, area " +
-                "where hospital.idHospital = area.idHospital;";*/
         Cursor c = null;
         try{
             c = mDb.rawQuery(sql2, null);
@@ -559,12 +649,15 @@ public class Adapter {
         finally {
             if (c.moveToFirst()) {
                 do {
-                    measureRow = new String[5];
+                    measureRow = new String[7];
                     measureRow[0] = c.getString(0);
                     measureRow[1] = c.getString(1);
                     measureRow[2] = c.getString(2);
                     measureRow[3] = "No";
                     measureRow[4] = c.getInt(3)+"";
+                    measureRow[5] = c.getInt(4)+"";
+                    measureRow[6] = c.getInt(5)+"";
+
                     measureList.add(measureRow);
                 } while (c.moveToNext());
             }

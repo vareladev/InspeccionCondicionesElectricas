@@ -138,6 +138,7 @@
                 android:paddingLeft="25dp"
                 android:paddingRight="150dp">
                 <LinearLayout
+                    android:id="@+id/Menu_boton4"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
@@ -176,6 +177,7 @@
                 android:paddingLeft="150dp"
                 android:paddingRight="25dp">
                 <LinearLayout
+                    android:id="@+id/Menu_boton5"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">

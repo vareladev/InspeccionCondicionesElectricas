@@ -30,4 +30,5 @@ dependencies {
     compile 'de.codecrafters.tableview:tableview:2.8.0'
     compile 'com.wdullaer:swipeactionadapter:2.0.0'
     compile 'com.google.code.gson:gson:2.7'
+    compile 'com.ajts.androidmads.SQLite2Excel:library:1.0.2'
 }

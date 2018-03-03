@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="500dp"
-    android:layout_height="400dp"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <TextView
@@ -23,23 +23,80 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="7"
+            android:layout_height="45dp"
             android:orientation="horizontal"
-            android:padding="20dp">
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            >
 
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.25"
+                android:gravity="left|center"
+                android:orientation="vertical">
 
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/excel_logo"
+                    android:padding="4dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.60"
+                android:gravity="left|center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:text="Guardar como:"
+                    android:textSize="@dimen/nueva_medicion" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="left|center"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/txt_get_filename"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/table_odd"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:gravity="left|center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:text="  .xls"
+                    android:textSize="@dimen/nueva_medicion" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_margin="10dp">
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="30dp">
             <Button
-                android:id="@+id/btn_close_export"
+                android:id="@+id/btn_export_close"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Cancelar"

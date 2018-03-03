@@ -18,8 +18,11 @@ import android.content.DialogInterface;
 
 import com.google.gson.Gson;
 
+import java.util.concurrent.ExecutionException;
+
 import Objetos.Usuario;
 import database.Adapter;
+import webservice.LoadData;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText login_password;
     private Button iniciar_sesion;
     private Adapter adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +125,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        try {
+            new LoadData(this).execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     public void showMsg(Context context, String msg, int tipoMensaje){

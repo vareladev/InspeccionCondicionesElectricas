@@ -18,6 +18,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import Objetos.*;
 
 public class Adapter {
@@ -662,6 +666,98 @@ public class Adapter {
                 } while (c.moveToNext());
             }
             return measureList;
+        }
+    }
+
+    //*************************************************************************
+    // CONSULTAS JSON
+    //*************************************************************************
+    public JSONArray cur2Json(Cursor cursor) {
+
+        JSONArray resultSet = new JSONArray();
+        cursor.moveToFirst();
+        while (cursor.isAfterLast() == false) {
+            int totalColumn = cursor.getColumnCount();
+            JSONObject rowObject = new JSONObject();
+            for (int i = 0; i < totalColumn; i++) {
+
+                    try {
+                        rowObject.put(cursor.getColumnName(i),
+                                cursor.getString(i));
+                    } catch (Exception e) {
+                        Log.d(TAG, e.getMessage());
+                    }
+
+            }
+            resultSet.put(rowObject);
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return resultSet;
+
+    }
+
+    public JSONObject cursorToJson(Cursor c) {
+        JSONObject retVal = new JSONObject();
+        for(int i=0; i<c.getColumnCount(); i++) {
+            String cName = c.getColumnName(i);
+            try {
+                switch (c.getType(i)) {
+                    case Cursor.FIELD_TYPE_INTEGER:
+                        retVal.put(cName, c.getInt(i));
+                        break;
+                    case Cursor.FIELD_TYPE_FLOAT:
+                        retVal.put(cName, c.getFloat(i));
+                        break;
+                    case Cursor.FIELD_TYPE_STRING:
+                        retVal.put(cName, c.getString(i));
+                        break;
+                }
+            }
+            catch(Exception ex) {
+                Log.e(TAG, "Exception converting cursor column to json field: " + cName + ", reason: " +ex.toString());
+            }
+        }
+        return retVal;
+    }
+
+    //equipo to json
+    public String equipoToJson()  {
+        JSONArray resultSet = new JSONArray();
+        String sql ="select idEquipo, marca, modelo, serie, fechaCalibracion, numeroInventario, idEquipoGlobal from equipo;";
+        Cursor c = null;
+        String row = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! equipoToJson: "+ mSQLException.toString());
+        }
+        finally {
+            //JSONArray retVal =  cur2Json(c);
+
+
+            if (c.moveToFirst()) {
+                do {
+                    row = "{" +
+                            "\"idEquipo\"=\""+c.getString(0)+"\"," +
+                            "\"marca\"=\""+c.getString(1)+"\"," +
+                            "\"modelo\"=\""+c.getString(2)+"\"," +
+                            "\"serie\"=\""+c.getString(3)+"\"," +
+                            "\"fechaCalibracion\"=\""+c.getString(4)+"\"," +
+                            "\"numeroInventario\"=\""+c.getString(5)+"\"," +
+                            "\"idEquipoGlobal\"=\""+c.getString(6)+"\"" +
+                            "}";
+                    try {
+                        resultSet.put(new JSONObject(row));
+                    }
+                    catch(JSONException e){
+                        Log.e(TAG, "ERROR! equipoToJson: "+ e.toString());
+                    }
+                } while (c.moveToNext());
+            }
+            return resultSet.toString();
         }
     }
 /*

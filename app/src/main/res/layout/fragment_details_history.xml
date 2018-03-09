@@ -318,11 +318,12 @@
             android:layout_marginTop="25dp"
             android:layout_marginBottom="10dp"
             android:gravity="center">
+
             <Button
-                android:id="@+id/btnNuevaMedicion"
+                android:id="@+id/btnMedDetalles"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Nuevo registro"
+                android:text="ver detalle"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:textSize="16sp"

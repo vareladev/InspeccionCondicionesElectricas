@@ -126,13 +126,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        try {
+        /*try {
             new LoadData(this).execute().get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public void showMsg(Context context, String msg, int tipoMensaje){

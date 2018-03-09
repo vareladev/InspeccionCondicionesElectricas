@@ -25,8 +25,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.concurrent.ExecutionException;
 
 import database.Adapter;
+import webservice.LoadData;
 
 import static android.content.ContentValues.TAG;
 
@@ -92,7 +94,13 @@ public class FragmenMenu extends Fragment {
             @Override
             public void onClick(View v)
             {
-
+                try {
+                    new LoadData(getActivity()).execute().get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         });
         Menu_boton5.setOnClickListener(new View.OnClickListener()

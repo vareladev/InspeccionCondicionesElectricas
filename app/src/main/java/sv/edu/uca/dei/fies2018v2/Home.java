@@ -44,19 +44,46 @@ public class Home extends AppCompatActivity{
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             Log.i("MainActivity", "popping backstack");
-            fragmentManager.popBackStack();
+            FragmentManager.BackStackEntry bse = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount()-1);
+            bse.getName();
+            if(bse.getName() == "fragmentMedMenu"){
+                while (fragmentManager.getBackStackEntryCount() > 0){
+                    fragmentManager.popBackStackImmediate();
+                }
+            }else
+                fragmentManager.popBackStack();
         } else {
-            Log.i("MainActivity", "nothing on backstack, calling super");
-            super.onBackPressed();
-            //super.onBackPressed();
+            Log.i("MainActivity", "se acabaron los back de fragmentos atras y llegamos a login");
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("¿Desea cerrar sesión?");
+            builder.setCancelable(false);
+            builder.setIcon(R.drawable.ic_warning);
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+            builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    //dialog.cancel();
+                    Home.super.onBackPressed();
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();//showing the dialog
+
         }
-        //showMsg(Home.this, "Este botón esta deshabilitado, por favor utilice el menú para navegar en la aplicación", 0);
-        /*DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }*/
+    }
+
+    public void openFragmentMeasureDetails(int idMedicion, String fechaMedicion){
+        setTitle("Administración de inspecciones de seguridad");
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment, Fragment_measures_history.newInstance(idMedicion, fechaMedicion))
+                .addToBackStack("fragment measure history")
+                .commit();
+        return;
     }
 
     public void openFragmentHistoryDetails(int idMedicion, int idHospital, int idArea){
@@ -68,7 +95,6 @@ public class Home extends AppCompatActivity{
                 .addToBackStack("fragment detail history")
                 .commit();
         return;
-
     }
 
     public void openFragmentHistory(){
@@ -164,6 +190,7 @@ public class Home extends AppCompatActivity{
                 .setPositiveButton("Si", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
+
                     }
                 });
         AlertDialog alert = builder.create();

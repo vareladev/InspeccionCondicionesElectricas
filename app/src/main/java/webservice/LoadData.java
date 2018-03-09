@@ -33,7 +33,7 @@ public class LoadData extends AsyncTask<Void, Void, String>{
     private Context context;
     private ProgressDialog pDialog;
 
-    private final String ws_url  = "http://dei.uca.edu.sv/fies2018/webService.php";
+    private final String ws_url  = "http://dei.uca.edu.sv/webservice/fies/webService.php";
     private String line;
     private String response = "";
 
@@ -92,6 +92,8 @@ public class LoadData extends AsyncTask<Void, Void, String>{
                 while ((line=br.readLine()) != null) {
                     response+=line;
                 }
+
+                br.close();
             }
             else {
                 response="";

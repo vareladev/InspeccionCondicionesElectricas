@@ -440,7 +440,7 @@ public class Adapter {
 
     //crear nuevo registro
     public NuevaMedicion getMeasure(int idMedicion){
-        final String sql ="select servicioAnalizado, responsable from medicion where idMedicion = "+idMedicion+";";
+        final String sql ="select servicioAnalizado, responsable, fecha from medicion where idMedicion = "+idMedicion+";";
         Cursor c = null;
         NuevaMedicion nuevaMedicion = null;
         try{
@@ -452,9 +452,42 @@ public class Adapter {
         finally {
             if (c.moveToFirst()) {
                 //convirtiendo a bitmap
-                nuevaMedicion = new NuevaMedicion(null, null, c.getString(0), c.getString(1), null);
+                nuevaMedicion = new NuevaMedicion(null, null, c.getString(0), c.getString(1), null, c.getString(2));
             }
             return nuevaMedicion;
+        }
+    }
+
+    //registrar nuevo comentario
+    public boolean updateMeaComment(int idMedicion, String comentario){
+        boolean result = false;
+        ContentValues values = new ContentValues();
+        try{
+            values.put("comentario", comentario);
+            mDb.update("medicion", values, "idMedicion" + "=" + idMedicion, null);
+            result = true;
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "Adapter>updateMeaComment >>"+ mSQLException.toString());
+        }
+        return result;
+    }
+
+    public String getMeaComment(int idMedicion){
+        final String sql ="select comentario from medicion where idMedicion = "+idMedicion+";";
+        Cursor c = null;
+        String comentario = "";
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "getMeasure >"+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                comentario =  c.getString(0);
+            }
+            return comentario;
         }
     }
     //*************************************************************************
@@ -604,7 +637,7 @@ public class Adapter {
                     contador ++;
                     subVariableRow = new String[5];
                     subVariableRow[0] = contador+"";
-                    subVariableRow[1] = c.getFloat(0)+"";
+                    subVariableRow[1] = c.getInt(0) == 1 ? "Si" : "No";
                     subVariableRow[2] = c.getFloat(1)+"";
                     subVariableRow[3] = c.getFloat(2)+"";
                     subVariableRow[4] = c.getFloat(3)+"";

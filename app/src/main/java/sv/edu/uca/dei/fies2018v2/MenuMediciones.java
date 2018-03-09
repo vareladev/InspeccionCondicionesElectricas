@@ -37,6 +37,10 @@ public class MenuMediciones extends Fragment {
     //Database adapter
     private Adapter adapter;
 
+    //para imagenes:
+    private static ArrayList<Area> AreasList;
+    private static int areaSelected;
+
     public static Equipo ListItemFromLeft;
     public static Equipo ListItemFromRight;
 
@@ -73,7 +77,7 @@ public class MenuMediciones extends Fragment {
 
         //lista de areas
         //creando arreglo (vacio por el momento, esto depende del hospital seleccionado)
-        final ArrayList<Area> AreasList = new ArrayList<>();
+        AreasList = new ArrayList<>();
         final ArrayAdapter<Area> spinAreaAdapter = new ArrayAdapter<Area>(getActivity(), android.R.layout.simple_spinner_dropdown_item, AreasList);
         mSpinAreas.setAdapter(spinAreaAdapter);
         mSpinAreas.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -81,6 +85,7 @@ public class MenuMediciones extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //Toast.makeText(getContext(), "area seleccionada", Toast.LENGTH_SHORT).show();
                 mImgNuevaMedArea.setImageBitmap(AreasList.get(position).getPlano());
+                areaSelected = position;
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -110,6 +115,7 @@ public class MenuMediciones extends Fragment {
                 spinAreaAdapter.notifyDataSetChanged();
                 //cambiando imagen
                 mImgNuevaMedArea.setImageBitmap(AreasList.get(0).getPlano());
+                //habilitando/deshabilitando boton
                 if(position == 0){
                     mBtnNuevaMedicion.setEnabled(false);
                     mBtnNuevaMedicion.setBackground(getResources().getDrawable(R.drawable.shape_disabled_button));
@@ -118,7 +124,6 @@ public class MenuMediciones extends Fragment {
                     mBtnNuevaMedicion.setEnabled(true);
                     mBtnNuevaMedicion.setBackground(getResources().getDrawable(R.drawable.shape_round_corners));
                 }
-
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -163,6 +168,16 @@ public class MenuMediciones extends Fragment {
                 }
             }
         });
+
+
+        //listener imagen:
+        mImgNuevaMedArea  .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogImgPreview();
+            }
+        });
+
 
         //Listener boton de añadir equipo a la medicion
         mBtnPlusEquip .setOnClickListener(new View.OnClickListener() {
@@ -279,5 +294,24 @@ public class MenuMediciones extends Fragment {
         }
         AlertDialog alert = builder.create();
         alert.show();//showing the dialog
+    }
+
+    private void dialogImgPreview(){
+
+        //Base de datos
+        adapter = new Adapter(getActivity());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.pop_up_image_detail,null);
+        builder.setView(dialogView);
+
+        //objetos del popup
+        final ImageView imgPreview = (ImageView)dialogView.findViewById(R.id.imgPreview);
+
+        final AlertDialog dialog = builder.create();
+        //contenido
+        imgPreview.setImageBitmap(AreasList.get(areaSelected).getPlano());
+        dialog.show();
     }
 }

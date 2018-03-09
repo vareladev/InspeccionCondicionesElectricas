@@ -10,6 +10,7 @@ public class NuevaMedicion {
     private String servicioAnalizado;
     private String responsable;
     private String telefono;
+    private String fecha;
 
     public NuevaMedicion(String idUsuario, String idArea, String servicioAnalizado, String responsable, String telefono) {
         this.idUsuario = idUsuario;
@@ -17,6 +18,23 @@ public class NuevaMedicion {
         this.servicioAnalizado = servicioAnalizado;
         this.responsable = responsable;
         this.telefono = telefono;
+    }
+
+    public NuevaMedicion(String idUsuario, String idArea, String servicioAnalizado, String responsable, String telefono, String fecha) {
+        this.idUsuario = idUsuario;
+        this.idArea = idArea;
+        this.servicioAnalizado = servicioAnalizado;
+        this.responsable = responsable;
+        this.telefono = telefono;
+        this.fecha = fecha;
+    }
+
+    public String getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
     }
 
     public String getIdUsuario() {

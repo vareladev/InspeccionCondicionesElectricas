@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -28,6 +29,8 @@ public class fragment_details_history extends Fragment {
     private int idMedicion;
     private int idHospital;
     private int idArea;
+    private static String fechaMedicion;
+
     //Database adapter
     private Adapter adapter;
 
@@ -77,7 +80,7 @@ public class fragment_details_history extends Fragment {
         final ImageView img_h_plano = (ImageView) view.findViewById(R.id.img_h_plano);
         final ListView list_h_equipright = (ListView) view.findViewById(R.id.list_h_equipright);
         final ListView list_h_equipleft = (ListView) view.findViewById(R.id.list_h_equipleft);
-
+        final Button btnMedDetalles = (Button) view.findViewById(R.id.btnMedDetalles);
 
 
         //llenando datos
@@ -87,6 +90,7 @@ public class fragment_details_history extends Fragment {
         txt_h_area.setText(area.getArea());
         img_h_plano.setImageBitmap(area.getPlano());
         final NuevaMedicion nuevaMedicion = adapter.getMeasure(idMedicion);
+        fechaMedicion = nuevaMedicion.getFecha();
         txt_h_servicio.setText(nuevaMedicion.getServicioAnalizado());
         txt_h_responsable.setText(nuevaMedicion.getResponsable());
         disableEditText(txt_h_hospital, txt_h_area, txt_h_responsable, txt_h_servicio);
@@ -101,7 +105,13 @@ public class fragment_details_history extends Fragment {
         final ArrayAdapter<Equipo> equipListAdapter = new ArrayAdapter<Equipo>(getActivity(), android.R.layout.simple_spinner_dropdown_item, EquipList);
         list_h_equipleft.setAdapter(equipListAdapter);
 
-
+        //funcionalidad de boton
+        btnMedDetalles .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((Home)getActivity()).openFragmentMeasureDetails(idMedicion, fechaMedicion);
+            }
+        });
 
         return view;
     }

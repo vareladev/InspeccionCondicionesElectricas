@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -59,9 +60,10 @@ public class FragmentMedMenu extends Fragment {
         //Botones del menu
         LinearLayout MgetElecData = (LinearLayout) view.findViewById(R.id.getElecData);
         LinearLayout MgetLuxData = (LinearLayout) view.findViewById(R.id.getLuxData);
-        LinearLayout MgetLuxRoomData = (LinearLayout) view.findViewById(R.id.getLuxRoomData);
+        //LinearLayout MgetLuxRoomData = (LinearLayout) view.findViewById(R.id.getLuxRoomData);
         LinearLayout MgetNoiseData = (LinearLayout) view.findViewById(R.id.getNoiseData);
         LinearLayout MgetTempData = (LinearLayout) view.findViewById(R.id.getTempData);
+        LinearLayout MgetComment = (LinearLayout) view.findViewById(R.id.getComment);
         LinearLayout MgetHumData = (LinearLayout) view.findViewById(R.id.getHumData);
         MgetElecData.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -75,12 +77,12 @@ public class FragmentMedMenu extends Fragment {
                 dialogCheckMedL(idMedicion, 2, "Condiciones ambientales: Iluminación", "Nuevo Registro: Iluminación");
             }
         });
-        MgetLuxRoomData.setOnClickListener(new View.OnClickListener(){
+        /*MgetLuxRoomData.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 dialogCheckMedL(idMedicion, 3, "Condiciones ambientales: Iluminación campo operatorio", "Nuevo Registro: Iluminación");
             }
-        });
+        });*/
         MgetNoiseData.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -99,13 +101,19 @@ public class FragmentMedMenu extends Fragment {
                 dialogCheckMedL(idMedicion, 6, "Condiciones ambientales: Humedad", "Nuevo Registro: Humedad");
             }
         });
+        MgetComment.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                dialogGetComment(idMedicion);
+            }
+        });
         return view;
     }
 
     //*************************************************
     //administrar mediciones
-    //2-iluminacion ambiental}
-    //3-iluminacion campo operatorio
+    //2-iluminacion ambiental
+    //3-iluminacion campo operatorio >>>> ya no!!!!
     //4-ruido ambiental
     //5-temperatura ambiental
     //6-humedad relativa ambietakl
@@ -156,6 +164,50 @@ public class FragmentMedMenu extends Fragment {
             public void onClick(View v) {
                 dialogNewMed(ParamIdMed, Paramtipo, subtitle);
                 //dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void dialogGetComment(final int ParamIdMed){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.pop_up_med_comment,null);
+        builder.setView(dialogView);
+
+        //inicializacion de objetos
+        final EditText txtComment = (EditText) dialogView.findViewById(R.id.txtComment);
+        Button btnCancelComment = (Button)dialogView.findViewById(R.id.btnCancelComment);
+        Button btnGetComment = (Button)dialogView.findViewById(R.id.btnGetComment);
+
+        //verificando si ya existe un comentario y mostrarlo
+        adapter.open();
+        txtComment.setText(adapter.getMeaComment(ParamIdMed));
+        adapter.close();
+
+        //inicializando dialog
+        final AlertDialog dialog = builder.create();
+
+        //Listener de los botones guardar y cancelar
+        btnCancelComment .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        btnGetComment .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapter.open();
+                if(adapter.updateMeaComment(ParamIdMed, txtComment.getText().toString() )){
+                    showMsg(getActivity(),"¡el comentario ha sido registrado exitosamente!",1);
+                }
+                else {
+                    showMsg(getActivity(), "Ocurrio un error al intentar guardar el comentario...", 2);
+                }
+                adapter.close();
+                dialog.dismiss();
             }
         });
 
@@ -284,7 +336,8 @@ public class FragmentMedMenu extends Fragment {
         final TextView mTxtvTitleMedElec = (TextView)dialogView.findViewById(R.id.txtvTitleMedElec);
         Button MBtnCancelMedElec = (Button)dialogView.findViewById(R.id.btnCancelMedElec);
         Button mBtnGetMedElec = (Button)dialogView.findViewById(R.id.btnGetMedElec);
-        final EditText mTxtPolaridad = (EditText)dialogView.findViewById(R.id.txtPolaridad);
+        final CheckBox checkBoxPolaridad = (CheckBox)dialogView.findViewById(R.id.checkBoxPolaridad);
+        //final EditText mTxtPolaridad = (EditText)dialogView.findViewById(R.id.txtPolaridad);
         final EditText mTxtVFaseNeutro = (EditText)dialogView.findViewById(R.id.txtVFaseNeutro);
         final EditText mTxtVNeutroTierra = (EditText)dialogView.findViewById(R.id.txtVNeutroTierra);
         final EditText mTxtVFaseTierra = (EditText)dialogView.findViewById(R.id.txtVFaseTierra);
@@ -306,18 +359,22 @@ public class FragmentMedMenu extends Fragment {
         mBtnGetMedElec .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(checkEditTextIsEmpty(mTxtPolaridad, mTxtVFaseNeutro,mTxtVNeutroTierra,mTxtVFaseTierra )){
+                if(checkEditTextIsEmpty(mTxtVFaseNeutro,mTxtVNeutroTierra,mTxtVFaseTierra )){
                     adapter.open();
                     //insertando la variable
                     if(adapter.newVariable(idMedicion,0, 1,0)){
                         //al ser med electrica se llena la tabla subvariable
                         int idVariable = adapter.getLastId("variable");
-                        float polaridad = Float.parseFloat(mTxtPolaridad.getText().toString());
+                        //float polaridad = Float.parseFloat(mTxtPolaridad.getText().toString());
+                        int polaridad = 0;
+                        if (checkBoxPolaridad.isChecked())
+                            polaridad = 1;
                         float vfaseneutro = Float.parseFloat(mTxtVFaseNeutro.getText().toString());
                         float vneutrotierra = Float.parseFloat(mTxtVNeutroTierra.getText().toString());
                         float vfasetierra = Float.parseFloat(mTxtVFaseTierra.getText().toString());
                         if(adapter.newSubVariable(idVariable,polaridad,vfaseneutro,vneutrotierra,vfasetierra)){
-                            String[] subVariableRow = {adapter.countReceptacles(idMedicion)+"", polaridad+"", vfaseneutro+"", vneutrotierra+"", vfasetierra+""};
+                            String cadPolaridad = polaridad == 1 ? "Si" : "No";
+                            String[] subVariableRow = {adapter.countReceptacles(idMedicion)+"", cadPolaridad, vfaseneutro+"", vneutrotierra+"", vfasetierra+""};
                             listReceptaclesId.add(subVariableRow);
                             tableAdapterElec.notifyDataSetChanged();
                             dialog.dismiss();

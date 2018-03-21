@@ -706,21 +706,20 @@ public class Adapter {
     // CONSULTAS JSON
     //*************************************************************************
     public JSONArray cur2Json(Cursor cursor) {
-
-        JSONArray resultSet = new JSONArray();
+        JSONArray resultSet = null;
         cursor.moveToFirst();
         while (cursor.isAfterLast() == false) {
+            if(resultSet == null)
+                resultSet = new JSONArray();
             int totalColumn = cursor.getColumnCount();
             JSONObject rowObject = new JSONObject();
             for (int i = 0; i < totalColumn; i++) {
-
                     try {
                         rowObject.put(cursor.getColumnName(i),
                                 cursor.getString(i));
                     } catch (Exception e) {
                         Log.d(TAG, e.getMessage());
                     }
-
             }
             resultSet.put(rowObject);
             cursor.moveToNext();
@@ -756,9 +755,9 @@ public class Adapter {
     }
 
     //equipo to json
-    public String equipoToJson()  {
+    public String tableToJSON(String table, String idColumnGlobal)  {
         JSONArray resultSet = new JSONArray();
-        String sql ="select idEquipo, marca, modelo, serie, fechaCalibracion, numeroInventario, idEquipoGlobal from equipo;";
+        String sql ="select * from "+table+" where "+idColumnGlobal+" IS NULL  OR "+idColumnGlobal+" = '';";
         Cursor c = null;
         String row = null;
         try{
@@ -768,29 +767,27 @@ public class Adapter {
             Log.e(TAG, "ERROR! equipoToJson: "+ mSQLException.toString());
         }
         finally {
-            //JSONArray retVal =  cur2Json(c);
+            JSONArray retVal =  cur2Json(c);
+            if(retVal != null)
+                return retVal.toString();
+            else
+                return null;
+        }
+    }
 
-
-            if (c.moveToFirst()) {
-                do {
-                    row = "{" +
-                            "\"idEquipo\"=\""+c.getString(0)+"\"," +
-                            "\"marca\"=\""+c.getString(1)+"\"," +
-                            "\"modelo\"=\""+c.getString(2)+"\"," +
-                            "\"serie\"=\""+c.getString(3)+"\"," +
-                            "\"fechaCalibracion\"=\""+c.getString(4)+"\"," +
-                            "\"numeroInventario\"=\""+c.getString(5)+"\"," +
-                            "\"idEquipoGlobal\"=\""+c.getString(6)+"\"" +
-                            "}";
-                    try {
-                        resultSet.put(new JSONObject(row));
-                    }
-                    catch(JSONException e){
-                        Log.e(TAG, "ERROR! equipoToJson: "+ e.toString());
-                    }
-                } while (c.moveToNext());
-            }
-            return resultSet.toString();
+    //actualizar tabla equipo
+    public boolean updateGlobalId(String tabla, String idColumnName, String idValue, String globalColumnName, String globalValue) {
+        int result = 0;
+        ContentValues args = new ContentValues();
+        try {
+            args.put(globalColumnName, globalValue);
+            result = mDb.update(tabla, args, idColumnName + "=" + idValue, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! updateGlobalId>"+ mSQLException.toString());
+        }
+        finally{
+            return result > 0;
         }
     }
 /*

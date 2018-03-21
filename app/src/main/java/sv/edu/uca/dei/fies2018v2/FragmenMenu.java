@@ -29,6 +29,7 @@ import java.util.concurrent.ExecutionException;
 
 import database.Adapter;
 import webservice.LoadData;
+import webservice.WSHelper;
 
 import static android.content.ContentValues.TAG;
 
@@ -94,13 +95,12 @@ public class FragmenMenu extends Fragment {
             @Override
             public void onClick(View v)
             {
-                try {
-                    new LoadData(getActivity()).execute().get();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+                //new Thread(new WSHelper(getActivity())).start();
+                //Thread wsHelper = new Thread(new WSHelper(getActivity()));
+                //WSHelper wsHelper = new WSHelper(getActivity());
+                //wsHelper.run();
+                new LoadData(getActivity()).execute();
+
             }
         });
         Menu_boton5.setOnClickListener(new View.OnClickListener()

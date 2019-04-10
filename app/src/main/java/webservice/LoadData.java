@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
@@ -44,6 +46,7 @@ public class LoadData extends AsyncTask<Void, Void, String>{
 
     private Adapter adapter;
 
+    //constructor
     public LoadData(Context context){
         this.context = context;
         adapter = new Adapter(context);
@@ -69,9 +72,19 @@ public class LoadData extends AsyncTask<Void, Void, String>{
 
     @Override
     protected String doInBackground(Void... params) {
+        //verificando si el dispositivo tiene internet
+        if(!isInternetWorking("https://google.com")){
+            return "4";
+        }
+        //verificando si el webservice es accesible
+        if(!isServerReachable(context,ws_url)){
+            return "5";
+        }
+
         String[] tableList = {"equipo","accesorio","mxe", "medicion", "variable", "subvariable"};
         String[] globalColumnList = {"idEquipoGlobal","idAccesorioGlobal","idMxeGlobal", "idMedicionGlobal", "idVariableGlobal", "idSubVariableGlobal"};
 
+        int JSONNULLCont = 0;
         for (int i = 0; i<tableList.length ;i++){
             //abriendo conexion
             HttpURLConnection httpCon = getHttpCon();
@@ -100,16 +113,16 @@ public class LoadData extends AsyncTask<Void, Void, String>{
                     if(connectionRes){
                         //recibiendo respuesta de webservice
                         String serverResponse = HttpRead(httpCon);
-                        //Log.d(TAG+", server: ", serverResponse);
+                        Log.d(TAG+", server: ", serverResponse);
                         if (serverResponse != null)
                             udpateDataBase(serverResponse);
                     }else{
                         return "3";
                     }
                 }
-                /*else{
-                    return "2";
-                }*/
+                else{
+                    JSONNULLCont++;
+                }
             }
             else{
                 Log.i(TAG +"thread for","fallo conexion");
@@ -118,7 +131,10 @@ public class LoadData extends AsyncTask<Void, Void, String>{
             //cerrando conexion
             closeHttpCon(httpCon);
         }
-        return null;
+        if(JSONNULLCont==6)
+            return "2";
+        else
+            return null;
     }
 
     /*
@@ -126,15 +142,27 @@ public class LoadData extends AsyncTask<Void, Void, String>{
     * 1-Fallo al inicializar HttpURLConnection
     * 2-tabla vacia o no hay nada que actualizar
     * 3-error al intentar enviar o recibir datos.
+    * 4-El dispositivo no tiene internet
+    * 5-El webservice es inaccesible
     * */
     @Override
     protected void onPostExecute(String result) {
         if(result != null){
             Log.d(TAG+"onPost","Codigo resultante: "+result);
+            if(result == "4")
+                showMsg(context, "Ocurrió un error al intentar sincronizar: El dispositivo no dispone de una conexión a internet. Verifique su conexión y vuelva a intentarlo.", 2);
+            else if(result == "3")
+                showMsg(context, "Ocurrió un error al intentar enviar o recibir datos.", 2);
+            else if(result == "2")
+                showMsg(context, "Actualmente los datos del dispositivo y del servidor estan sincronizados. Por lo que se omitirá este proceso.", 0);
+            else if(result == "5")
+                showMsg(context, "Ocurrió un error al intentar sincronizar: El sitio web que alojará los datos no responde, por favor intentelo mas tarde y notifique a algun administrador.", 2);
+            else
+                showMsg(context, "Ocurrió un error al intentar sincronizar", 2);
         }
         else{
-            Log.d(TAG+"onPost","Result is null, todo bien");
-            showMsg(context, "La información ha sido sincronizada correctamente", 1);
+            //Log.d(TAG+"onPost","Result is null, todo bien");
+            showMsg(context, "¡ok! La información ha sido sincronizada correctamente", 1);
         }
         pDialog.dismiss();
     }
@@ -212,7 +240,7 @@ public class LoadData extends AsyncTask<Void, Void, String>{
             result.append("=");
             result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
         }
-        //Log.d(TAG, result.toString());
+        Log.d(TAG, result.toString());
         return result.toString();
     }
 
@@ -296,4 +324,42 @@ public class LoadData extends AsyncTask<Void, Void, String>{
         alert.show();//showing the dialog
     }
 
+    public boolean isInternetWorking(String site) {
+        boolean success = false;
+        try {
+            URL url = new URL(site);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(10000);
+            connection.connect();
+            success = connection.getResponseCode() == 200;
+            connection.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return success;
+    }
+
+    public boolean isServerReachable(Context context, String srvUrl) {
+        ConnectivityManager connMan = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = connMan.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnected()) {
+            try {
+                URL urlServer = new URL(srvUrl);
+                HttpURLConnection urlConn = (HttpURLConnection) urlServer.openConnection();
+                urlConn.setConnectTimeout(3000); //<- 3Seconds Timeout
+                urlConn.connect();
+                if (urlConn.getResponseCode() == 200) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (MalformedURLException e1) {
+                return false;
+            } catch (IOException e) {
+                return false;
+            }
+        }
+        return false;
+    }
 }
+

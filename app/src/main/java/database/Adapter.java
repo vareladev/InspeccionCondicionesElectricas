@@ -768,8 +768,10 @@ public class Adapter {
         }
         finally {
             JSONArray retVal =  cur2Json(c);
-            if(retVal != null)
+            if(retVal != null) {
+                Log.w(TAG + ": RET: ", retVal.toString());
                 return retVal.toString();
+            }
             else
                 return null;
         }

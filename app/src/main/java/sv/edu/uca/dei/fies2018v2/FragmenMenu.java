@@ -4,17 +4,24 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,17 +34,26 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
+import Objetos.Equipo;
+import Objetos.Usuario;
 import database.Adapter;
 import webservice.LoadData;
 import webservice.WSHelper;
 
 import static android.content.ContentValues.TAG;
+import static sv.edu.uca.dei.fies2018v2.MenuMediciones.getSavedObjectFromPreference;
 
 
 public class FragmenMenu extends Fragment {
-
-    //database
+    //++++++++++++++++++++++++++++++++++
+    //Database adapter
     private Adapter adapter;
+
+    public static Equipo EquipFromList_1 = null; //para obtener un equipo de la lista de seleccion
+    public static Equipo EquipFromList_2 = null;
+
+    static boolean isNextEnabled = false;
+    //++++++++++++++++++++++++++++++++++
 
     //aux for export to xls
     private static SQLiteToExcel sqliteToExcel;
@@ -55,11 +71,20 @@ public class FragmenMenu extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fragmen_menu, container, false);
-        LinearLayout btnEquipo1 = (LinearLayout) view.findViewById(R.id.Menu_boton1); //nuevo registro
+        //++++++++++++++++++++++++++++++++++
+        //usuario conectado:
+        final Usuario currentUser = getSavedObjectFromPreference(getActivity(), "preferences", "currentUser", Usuario.class);
+
+        //Base de datos
+        adapter = new Adapter(getActivity());
+        adapter.createDatabase();
+        LinearLayout btnEquipo1 = (LinearLayout) view.findViewById(R.id.Menu_boton1); //Levanta PopUp Seleccion de equipo
+        //++++++++++++++++++++++++++++++++++
         LinearLayout btnEquipo3 = (LinearLayout) view.findViewById(R.id.Menu_boton3); //history
         LinearLayout btnEquipo2 = (LinearLayout) view.findViewById(R.id.Menu_boton2); //equipo
         LinearLayout Menu_boton4 = (LinearLayout) view.findViewById(R.id.Menu_boton4); //sincronizar
         LinearLayout Menu_boton5 = (LinearLayout) view.findViewById(R.id.Menu_boton5); //exportar
+        LinearLayout Menu_boton6 = (LinearLayout) view.findViewById(R.id.Menu_boton6); //Seguridad electrica
 
 
 
@@ -80,15 +105,24 @@ public class FragmenMenu extends Fragment {
                 //((Home)getActivity()).openVarRegMed();
             }
         });
-        btnEquipo1.setOnClickListener(new View.OnClickListener()
+        //++++++++++++++++++++++++++++++++++
+        /*btnEquipo1.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
                 ((Home)getActivity()).openFragNewMed();
-                //((Home)getActivity()).openVarRegMed();
+            }
+        });*/
+        btnEquipo1.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                dialogOpenSelectEquip();
             }
         });
+        //++++++++++++++++++++++++++++++++++
 
         Menu_boton4.setOnClickListener(new View.OnClickListener()
         {
@@ -112,9 +146,162 @@ public class FragmenMenu extends Fragment {
             }
         });
 
+        //abriendo fragmento de inpeccion de seguridad electrica
+        //funcion definida en la clase Home
+        Menu_boton6.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ((Home)getActivity()).openFragSegElec();
+            }
+        });
 
         return view;
     }
+
+    //++++++++++++++++++++++++++++++++++
+    private void dialogOpenSelectEquip(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.pop_up_select_equipment_1,null);
+        builder.setView(dialogView);
+
+        //Objetos de PopUp
+        final ListView listSelectEquip_1 = (ListView)dialogView.findViewById(R.id.ListSelectEquip_1);
+        final ListView listSelectEquip_2 = (ListView)dialogView.findViewById(R.id.ListSelectEquip_2);
+        final Button btnAddEquip_1 = (Button)dialogView.findViewById(R.id.btnAddEquip_1);
+        final Button btnRetEquip_1 = (Button)dialogView.findViewById(R.id.btnRetEquip_1);
+        final Button btn_create_measure = (Button)dialogView.findViewById(R.id.btnCreateMeasure);
+
+        //creando ventana
+        final AlertDialog dialog = builder.create();
+
+        //Lista 1
+        //obteniendo lista de equipos desde la base de datos:
+        adapter.open();
+        final ArrayList<Equipo> listaEquipo_1 = adapter.getEquipsForList();
+        adapter.close();
+        //creando adaptador
+        final ArrayAdapter<Equipo> adapter_1 = new ArrayAdapter<Equipo>(getActivity(), android.R.layout.simple_spinner_dropdown_item, listaEquipo_1);
+        //seteando adaptador
+        listSelectEquip_1.setAdapter(adapter_1);
+        //definiendo color de background
+        listSelectEquip_1.setBackgroundColor(getResources().getColor(R.color.table_even));
+        //Listener de la lista 1
+        listSelectEquip_1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                for (int i = 0; i < listSelectEquip_1.getChildCount(); i++) {
+                    if(position == i ){
+                        EquipFromList_1 = (Equipo) listaEquipo_1.get(position);
+                        //Toast.makeText(getContext(), "equipo ID: "+ultimoEquipSeleccionado.getId()+",  equipo Name : "+ultimoEquipSeleccionado.getEquipo(), Toast.LENGTH_SHORT).show();
+                        listSelectEquip_1.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.divider));
+                    }else{
+                        listSelectEquip_1.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
+                    }
+                }
+            }
+        });
+
+        //lista 2: lista de equipos a utilizar.
+        //creando adaptador
+        final ArrayList<Equipo> listaEquipo_2 = new ArrayList<>();
+        final ArrayAdapter<Equipo> adapter_2 = new ArrayAdapter<Equipo>(getActivity(), android.R.layout.simple_spinner_dropdown_item, listaEquipo_2);
+        //seteando adaptador
+        listSelectEquip_2.setAdapter(adapter_2);
+        //Listener de la lista 2
+        listSelectEquip_2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                for (int i = 0; i < listSelectEquip_2.getChildCount(); i++) {
+                    if(position == i ){
+                        EquipFromList_2 = (Equipo) listaEquipo_2.get(position);
+                        listSelectEquip_2.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.divider));
+                    }else{
+                        listSelectEquip_2.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
+                    }
+                }
+            }
+        });
+
+
+        //Listener boton de añadir equipo a la medicion
+        btnAddEquip_1 .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (EquipFromList_1 != null){
+                    //coloreando todas las posiciones del listview
+                    for (int i = 0; i < listSelectEquip_1.getChildCount(); i++)
+                        listSelectEquip_1.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
+                    //removiendo de lista de equipos de la base de datos, el elemento selccionado
+                    adapter_1.remove(EquipFromList_1);
+                    adapter_1.notifyDataSetChanged();
+                    //agregando a la lista RIGHT el elemento seleccionado
+                    adapter_2.add(EquipFromList_1);
+                    adapter_2.notifyDataSetChanged();
+                    //volviendo a variable auxiliar equipo nulo
+                    EquipFromList_1 = null;
+                    //habilitando boton de iniciar una nueva medicion.
+                    if(!isNextEnabled){
+                        btn_create_measure.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.shape_round_corners));
+                        isNextEnabled = true;
+                    }
+                }
+            }
+        });
+
+        //listener boton de eliminar equipo de la medicion
+        btnRetEquip_1 .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (EquipFromList_2 != null){
+                    //coloreando todas las posiciones del listview
+                    for (int i = 0; i < listSelectEquip_2.getChildCount(); i++)
+                        listSelectEquip_2.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
+                    //removiendo de lista RIGHT el elemento selccionado
+                    adapter_2.remove(EquipFromList_2);
+                    adapter_2.notifyDataSetChanged();
+                    //agregando a la lista LEFT el elemento seleccionado
+                    adapter_1.add(EquipFromList_2);
+                    adapter_1.notifyDataSetChanged();
+                    //volviendo a variable auxiliar equipo nulo
+                    EquipFromList_2 = null;
+                    //desabilitando boton si se queda sin elementos la lista
+                    if(listSelectEquip_2.getAdapter().getCount() == 0){
+                        btn_create_measure.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.shape_disabled_button));
+                        isNextEnabled = false;
+                    }
+                }
+            }
+        });
+
+        btn_create_measure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isNextEnabled){
+                    isNextEnabled = false;
+                    //recorriendo items de la lista dos y guardardolas en un arraylist
+                    ArrayList<String> EquipsForNextPage = new ArrayList<>();
+                    Equipo e = null;
+                    for (int i = 0; i < listSelectEquip_2.getChildCount(); i++){
+                        e = (Equipo)listSelectEquip_2.getAdapter().getItem(i);
+                        EquipsForNextPage.add(e.getId()+"");
+                    }
+                    //eliminando la ventana
+                    dialog.dismiss();
+                    //accediendo al fragmento de definicion de nueva medición
+                    ((Home)getActivity()).openFragNewMed(EquipsForNextPage);
+                }
+            }
+        });
+
+
+        //mostrando dialogo
+        dialog.show();
+    }
+
+    //++++++++++++++++++++++++++++++++++
 
     private void dialogExport(){
         //calculando nombre de archivo

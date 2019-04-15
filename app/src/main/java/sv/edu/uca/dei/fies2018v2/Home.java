@@ -24,6 +24,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 public class Home extends AppCompatActivity{
 
 
@@ -121,13 +123,40 @@ public class Home extends AppCompatActivity{
         return;
     }
 
-    public void openFragNewMed(){
+    /*public void openFragNewMed(){
         setTitle("Inspección de instalaciones electricas y condiciones ambientales");
 
         MenuMediciones menuMediciones = new MenuMediciones();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.fragment, menuMediciones)
+                .addToBackStack("equipFromMenu")
+                .commit();
+        return;
+    }*/
+
+    public void openFragNewMed(ArrayList<String> idEquipList){
+        setTitle("Nueva medición.");
+
+        MenuMediciones menuMediciones = new MenuMediciones();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment, MenuMediciones.newInstance(idEquipList))
+                .addToBackStack("fragment detail history")
+                .commit();
+        return;
+    }
+
+
+
+    public void openFragSegElec(){
+        setTitle("Inspección de seguridad eléctrica");
+
+        //MenuMediciones menuMediciones = new MenuMediciones();
+        Fragment_Seg_Elec_1 fragment_Seg_Elec_1 = new Fragment_Seg_Elec_1();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment, fragment_Seg_Elec_1)
                 .addToBackStack("equipFromMenu")
                 .commit();
         return;

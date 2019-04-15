@@ -30,6 +30,7 @@ import java.util.Map;
 import database.Adapter;
 import de.codecrafters.tableview.TableView;
 import de.codecrafters.tableview.listeners.TableDataClickListener;
+import de.codecrafters.tableview.model.TableColumnWeightModel;
 import de.codecrafters.tableview.toolkit.SimpleTableDataAdapter;
 import de.codecrafters.tableview.toolkit.TableDataRowBackgroundProviders;
 import simpletable.SimpleTableHeaderAdapter;
@@ -38,7 +39,7 @@ import simpletable.SimpleTableHeaderAdapter;
 public class AdministrarEquipo extends Fragment {
 
     private Adapter adapter;
-    private static final String[] TABLE_HEADERS = { "Marca", "Modelo", "Serie", "N° Inventario" };
+    private static final String[] TABLE_HEADERS = { "Nombre", "Marca", "Modelo", "Inventario" };
     private TableView<String[]> tableView;
     private SimpleTableDataAdapter tableAdapter;
     //for datepicker
@@ -74,7 +75,15 @@ public class AdministrarEquipo extends Fragment {
         int colorEvenRows = getResources().getColor(R.color.table_even);
         int colorOddRows = getResources().getColor(R.color.table_odd);
         tableView.setDataRowBackgroundProvider(TableDataRowBackgroundProviders.alternatingRowColors(colorEvenRows, colorOddRows));
+        //modificacion de columnas
+        TableColumnWeightModel columnModel = new TableColumnWeightModel(4);
+        columnModel.setColumnWeight(0,3 );
+        columnModel.setColumnWeight(1,1 );
+        columnModel.setColumnWeight(2,1 );
+        columnModel.setColumnWeight(3,1 );
+        tableView.setColumnModel(columnModel);
 
+        //agregar equipo
         Button btnNuevoEquipo = (Button) view.findViewById(R.id.btnNuevoEquipo);
         btnNuevoEquipo.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -163,6 +172,7 @@ public class AdministrarEquipo extends Fragment {
         Button mBtnEquipCancel = (Button)dialogView.findViewById(R.id.btnEquipCancel);
         Button mBtnEquipSave = (Button)dialogView.findViewById(R.id.btnEquipGuardar);
         Button btnEquipF = (Button)dialogView.findViewById(R.id.btnEquipF);
+        final EditText mTxtNombre = (EditText)dialogView.findViewById(R.id.txtNombre_1);
         final EditText mTxtMarca = (EditText)dialogView.findViewById(R.id.txtMarca);
         final EditText mTxtModelo = (EditText)dialogView.findViewById(R.id.txtModelo);
         final EditText mTxtSerie = (EditText)dialogView.findViewById(R.id.txtSerie);
@@ -191,14 +201,14 @@ public class AdministrarEquipo extends Fragment {
             @Override
             public void onClick(View v) {
                 //Toast.makeText(getActivity(), "Agregar nuevo equipo", Toast.LENGTH_SHORT).show();
-                if(checkEditTextIsEmpty(mTxtMarca, mTxtModelo)){
+                if(checkEditTextIsEmpty(mTxtNombre,mTxtMarca, mTxtModelo)){
                     //Toast.makeText(getActivity(), "Agregar nuevo equipo", Toast.LENGTH_SHORT).show();
                     int correlativo = 0;
                     if(!TextUtils.isEmpty(mTxtCorrelInv.getText()))
                         correlativo = Integer.parseInt(mTxtCorrelInv.getText().toString());
 
                     adapter.open();
-                    if(adapter.newEquip(mTxtMarca.getText().toString(),mTxtModelo.getText().toString(),mTxtSerie.getText().toString(),
+                    if(adapter.newEquip(mTxtNombre.getText().toString(),mTxtMarca.getText().toString(),mTxtModelo.getText().toString(),mTxtSerie.getText().toString(),
                             GlobalTxtFecha.getText().toString(),correlativo)){
                         int idTabla = adapter.getLastId("equipo");
 
@@ -238,7 +248,7 @@ public class AdministrarEquipo extends Fragment {
         final AlertDialog alertDialogSuccess = alertDialogBuilderSuccess.create();
         alertDialogBuilderSuccess
                 .setMessage(
-                        "You voucher is printed, please go to the cashier.")
+                        "Message...")
                 .setCancelable(false)
                 .setPositiveButton("Confirm",
                         new DialogInterface.OnClickListener() {
@@ -256,6 +266,7 @@ public class AdministrarEquipo extends Fragment {
         Button mBtnEquipDel = (Button)dialogView.findViewById(R.id.btnEditEquipG);
         final Button mBtnEquipEdit = (Button)dialogView.findViewById(R.id.btnEditEquipE);
         final Button mBtnEquipDate = (Button)dialogView.findViewById(R.id.btnEditEquipF);
+        final EditText txtNombre_2 = (EditText)dialogView.findViewById(R.id.txtNombre_2);
         final EditText mTxtMarca = (EditText)dialogView.findViewById(R.id.txtEditMarca);
         final EditText mTxtModelo = (EditText)dialogView.findViewById(R.id.txtEditModel);
         final EditText mTxtSerie = (EditText)dialogView.findViewById(R.id.txtEditSerie);
@@ -282,6 +293,10 @@ public class AdministrarEquipo extends Fragment {
         ArrayList<String> mArrayList = adapter.getEquipoDetail(id_equipo);
         adapter.close();
         //set information:
+        //Nombre
+        txtNombre_2.setText(mArrayList.get(5));
+        txtNombre_2.setFocusable(false);
+        txtNombre_2.setEnabled(false);
         //Marca
         mTxtMarca.setText(mArrayList.get(0));
         mTxtMarca.setFocusable(false);
@@ -327,6 +342,11 @@ public class AdministrarEquipo extends Fragment {
             @Override
             public void onClick(View v) {
                 if(!mTxtMarca.isEnabled()){
+                    //Nombre
+                    txtNombre_2.setEnabled(true);
+                    txtNombre_2.setClickable(true);
+                    txtNombre_2.setFocusableInTouchMode(true);
+                    txtNombre_2.setFocusable(true);
                     //Marca
                     mTxtMarca.setEnabled(true);
                     mTxtMarca.setClickable(true);
@@ -357,10 +377,10 @@ public class AdministrarEquipo extends Fragment {
                     mBtnEquipEdit.setText("Guardar equipo");
                 }
                 else{
-                    //String[] updateRow = {id , marca, modelo , serie , correlativo , fechadecalibracion};/
-                    if(checkEditTextIsEmpty(mTxtMarca, mTxtModelo)){
+                    //String[] updateRow = {id, marca, modelo, serie, correlativo, fechadecalibracion, nombre};/
+                    if(checkEditTextIsEmpty(txtNombre_2,mTxtMarca, mTxtModelo)){
                         String[] updateRow = {id_equipo+"", mTxtMarca.getText().toString(),
-                                mTxtModelo.getText().toString(),null,null, null};
+                                mTxtModelo.getText().toString(),null,null, null, txtNombre_2.getText().toString()};
                         if(TextUtils.isEmpty(mTxtSerie.getText()))
                             updateRow[3] = null;
                         else

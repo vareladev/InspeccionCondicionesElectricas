@@ -98,7 +98,7 @@ public class Adapter {
     //*************************************************************************
     //obtener equipo version light
     public String[][] getEquipoPreview(){
-        String sql ="select marca, modelo, serie, numeroInventario, fechaCalibracion, idEquipo from equipo;";
+        String sql ="select nombre, marca, modelo, numeroInventario, fechaCalibracion, idEquipo from equipo;";
         Cursor c = null;
         try{
             c = mDb.rawQuery(sql, null);
@@ -132,12 +132,13 @@ public class Adapter {
     }
 
     //Insertar registro de equipo
-    public boolean newEquip(String marca, String modelo, String serie, String fecha, int correlInventario){
+    public boolean newEquip(String nombre,String marca, String modelo, String serie, String fecha, int correlInventario){
         boolean result = false;
         ContentValues values = new ContentValues();
         //String sql = "insert into equipo (codigoActivo, ubicacion, nota) VALUES ('"+codigoActivo+"', '"+ubicacion+"', '"+nota+"');";
         try{
             //mDb.execSQL(sql);
+            values.put("nombre", nombre);
             values.put("marca", marca);
             values.put("modelo", modelo);
             values.put("serie", serie);
@@ -158,7 +159,7 @@ public class Adapter {
 
     //obtener detalle de equipo
     public ArrayList<String> getEquipoDetail(int idEquipo){
-        String sql ="select marca, modelo, serie, numeroInventario, fechaCalibracion from equipo where idEquipo ="+idEquipo+";";
+        String sql ="select marca, modelo, serie, numeroInventario, fechaCalibracion, nombre from equipo where idEquipo ="+idEquipo+";";
         ArrayList<String> mArrayList = new ArrayList<String>();
         Cursor c = null;
         try{
@@ -179,6 +180,30 @@ public class Adapter {
         }
     }
 
+    //obtener lista simple de equipo para pantalla de creacion de nueva medicion
+    public Equipo getEquipForNewMea(String idEquipo){
+        String sql ="select idEquipo, modelo, nombre from equipo where idEquipo="+idEquipo+";";
+        Log.e(TAG, "SQL getEquipForNewMea >>>>>"+ sql);
+        Equipo e = null;
+        Cursor c = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! getEquipoPreview >>>>>"+ mSQLException.toString());
+        }
+        finally {
+
+            if (c.moveToFirst()) {
+                e = new Equipo(c.getInt(0)+"", c.getString(1)+" - "+c.getString(2));
+            }
+            return e;
+        }
+    }
+
+
+
+
     //actualizar tabla equipo
     public boolean updateEquipo(String[] row) {
         int result = 0;
@@ -189,6 +214,7 @@ public class Adapter {
             args.put("serie", row[3]);
             args.put("numeroInventario", row[4]);
             args.put("fechaCalibracion", row[5]);
+            args.put("nombre", row[6]);
             result = mDb.update("equipo", args, "idEquipo" + "=" + row[0], null);
         }
         catch (SQLException mSQLException){
@@ -212,9 +238,9 @@ public class Adapter {
             return result > 0;
         }
     }
-    //obtener detalle de equipo
+    //obtener lista de equipos para listview de seleccion de equipo para inicio de medicion
     public ArrayList<Equipo> getEquipsForList(){
-        String sql ="select idEquipo, marca from equipo;";
+        String sql ="select idEquipo, modelo, nombre from equipo;";
 
         ArrayList<Equipo> EquipList = new ArrayList<>();
         Cursor c = null;
@@ -228,7 +254,7 @@ public class Adapter {
 
             if (c.moveToFirst()) {
                 do {
-                    EquipList.add(new Equipo(c.getInt(0)+"", c.getString(1)));
+                    EquipList.add(new Equipo(c.getInt(0)+"", c.getString(1)+" - "+c.getString(2)));
                 } while (c.moveToNext());
             }
             return EquipList;
@@ -261,9 +287,8 @@ public class Adapter {
             }
             return EquipList;
         }
-
-
     }
+
     //*************************************************************************
     // CONSULTAS TABLA ACCESORIO
     //*************************************************************************

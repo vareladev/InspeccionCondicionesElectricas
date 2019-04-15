@@ -10,16 +10,19 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+
 
 import database.Adapter;
 import de.codecrafters.tableview.TableView;
@@ -29,6 +32,7 @@ import simpletable.SimpleTableHeaderAdapter;
 
 
 public class FragmentMedMenu extends Fragment {
+
     //variables auxiliares
     private Adapter adapter;
     private static int idMedicion;
@@ -37,7 +41,7 @@ public class FragmentMedMenu extends Fragment {
     private static final String[] TABLE_HEADERS_ELEC = { "R", "Polaridad", "VfaseN", "VNeutroT", "VfaseT" };
     private static ArrayList<String[]> listReceptaclesId;
     private static SimpleTableDataAdapter tableAdapterElec;
-    private static final String[] TABLE_HEADERS_VAR = { "Punto", "Valor","Cumple" };
+    private static final String[] TABLE_HEADERS_VAR = { "Punto", "Valor","Cumple","edit" };
     private static ArrayList<String[]> listConditions;
     private static SimpleTableDataAdapter tblAdapConditions;
 
@@ -50,6 +54,10 @@ public class FragmentMedMenu extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_med_menu, container, false);
+
+
+
+
         //inicializacion de adaptador de base de datos
         adapter = new Adapter(getActivity());
         //obteniendo ultimo id de la tabla medicion
@@ -65,12 +73,14 @@ public class FragmentMedMenu extends Fragment {
         LinearLayout MgetTempData = (LinearLayout) view.findViewById(R.id.getTempData);
         LinearLayout MgetComment = (LinearLayout) view.findViewById(R.id.getComment);
         LinearLayout MgetHumData = (LinearLayout) view.findViewById(R.id.getHumData);
+
         MgetElecData.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 dialogChkSegElec();
             }
         });
+
         MgetLuxData.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -169,6 +179,8 @@ public class FragmentMedMenu extends Fragment {
 
         dialog.show();
     }
+
+
 
     private void dialogGetComment(final int ParamIdMed){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

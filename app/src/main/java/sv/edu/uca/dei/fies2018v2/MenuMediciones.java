@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -37,6 +38,10 @@ public class MenuMediciones extends Fragment {
     //Database adapter
     private Adapter adapter;
 
+    //++++++++++++++++++++++++++++++++++
+    static ArrayList<String> idEquipList = new ArrayList<>();
+    //++++++++++++++++++++++++++++++++++
+
     //para imagenes:
     private static ArrayList<Area> AreasList;
     private static int areaSelected;
@@ -49,6 +54,21 @@ public class MenuMediciones extends Fragment {
         // Required empty public constructor
     }
 
+    //para recibir parametro
+    public static MenuMediciones newInstance(ArrayList<String> idEquipList) {
+        Bundle bundle = new Bundle();
+        bundle.putStringArrayList("lista", idEquipList);
+        MenuMediciones fragment = new MenuMediciones();
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    private void readBundle(Bundle bundle) {
+        if (bundle != null) {
+            idEquipList = bundle.getStringArrayList("lista");
+        }
+        return;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,6 +79,9 @@ public class MenuMediciones extends Fragment {
         //usuario conectado:
         final Usuario currentUser = getSavedObjectFromPreference(getActivity(), "preferences", "currentUser", Usuario.class);
 
+        //leyendo parametros de entrada
+        readBundle(getArguments());
+
         //Base de datos
         adapter = new Adapter(getActivity());
         adapter.createDatabase();
@@ -66,11 +89,8 @@ public class MenuMediciones extends Fragment {
         //elementos graficos
         Spinner spinnerHospital = (Spinner) view.findViewById(R.id.spinHospitales);
         final Spinner mSpinAreas = (Spinner) view.findViewById(R.id.spinAreas);
-        final ListView mlistEquipFromDB = (ListView) view.findViewById(R.id.listEquipFromDB);
-        final ListView mlistEquipFromSelected = (ListView) view.findViewById(R.id.listEquipFromSelected);
+        final ListView mlistEquipFromSelected = (ListView) view.findViewById(R.id.listEquipSelected);
         final ImageView mImgNuevaMedArea = (ImageView) view.findViewById(R.id.imgNuevaMedArea);
-        Button mBtnPlusEquip = (Button) view.findViewById(R.id.btnPlusEquip);
-        Button mBtnMinusEquip = (Button) view.findViewById(R.id.btnMinusEquip);
         final Button mBtnNuevaMedicion = (Button) view.findViewById(R.id.btnNuevaMedicion);
         final EditText mTxtNewMedServicio = (EditText) view.findViewById(R.id.txtNewMedServicio);
         final EditText mTxtNewMedResp = (EditText) view.findViewById(R.id.txtNewMedResp);
@@ -130,45 +150,18 @@ public class MenuMediciones extends Fragment {
             }
         });
 
-        //lista equipos guardados en base de datos LEFT
+
+
+        //lista equipos a usar en la medicion
+        ArrayList<Equipo> EquipList = new ArrayList<>();
+        //recorriendo lista de ids
         adapter.open();
-        final ArrayList<Equipo> equipList = adapter.getEquipsForList();
+        for (String idEquipo : idEquipList){
+            EquipList.add(adapter.getEquipForNewMea(idEquipo));
+        }
         adapter.close();
-        final ArrayAdapter<Equipo> listEquipAdapter = new ArrayAdapter<Equipo>(getActivity(), android.R.layout.simple_spinner_dropdown_item, equipList);
-        mlistEquipFromDB.setAdapter(listEquipAdapter);
-        mlistEquipFromDB.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                for (int i = 0; i < mlistEquipFromDB.getChildCount(); i++) {
-                    if(position == i ){
-                        ListItemFromLeft = (Equipo) equipList.get(position);
-                        //Toast.makeText(getContext(), "equipo ID: "+ultimoEquipSeleccionado.getId()+",  equipo Name : "+ultimoEquipSeleccionado.getEquipo(), Toast.LENGTH_SHORT).show();
-                        mlistEquipFromDB.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.table_odd));
-                    }else{
-                        mlistEquipFromDB.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
-                    }
-                }
-            }
-        });
-
-        //lista equipos a usar en la medicion RIGHT
-        final ArrayList<Equipo> equipList2 = new ArrayList<>();
-        final ArrayAdapter<Equipo> listEquipAdapter2 = new ArrayAdapter<Equipo>(getActivity(), android.R.layout.simple_spinner_dropdown_item, equipList2);
+        final ArrayAdapter<Equipo> listEquipAdapter2 = new ArrayAdapter<Equipo>(getActivity(), android.R.layout.simple_spinner_dropdown_item, EquipList);
         mlistEquipFromSelected.setAdapter(listEquipAdapter2);
-        mlistEquipFromSelected.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                for (int i = 0; i < mlistEquipFromSelected.getChildCount(); i++) {
-                    if(position == i ){
-                        ListItemFromRight = (Equipo) equipList2.get(position);
-                        mlistEquipFromSelected.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.table_odd));
-                    }else{
-                        mlistEquipFromSelected.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
-                    }
-                }
-            }
-        });
-
 
         //listener imagen:
         mImgNuevaMedArea  .setOnClickListener(new View.OnClickListener() {
@@ -178,52 +171,8 @@ public class MenuMediciones extends Fragment {
             }
         });
 
-
-        //Listener boton de añadir equipo a la medicion
-        mBtnPlusEquip .setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!(ListItemFromLeft == null)){
-                    //Toast.makeText(getContext(), "equipo ID: "+ListItemFromLeft.getId()+",  equipo Name : "+ListItemFromLeft.getEquipo(), Toast.LENGTH_SHORT).show();
-                    //coloreando todas las posiciones del listview
-                    for (int i = 0; i < mlistEquipFromDB.getChildCount(); i++)
-                        mlistEquipFromDB.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
-                    //removiendo de lista LEFT el elemento selccionado
-                    listEquipAdapter.remove(ListItemFromLeft);
-                    listEquipAdapter.notifyDataSetChanged();
-                    //agregando a la lista RIGHT el elemento seleccionado
-                    equipList2.add(ListItemFromLeft);
-                    listEquipAdapter2.notifyDataSetChanged();
-                    //volviendo a variable auxiliar equipo nulo
-                    ListItemFromLeft = null;
-                }
-            }
-        });
-
-        //listener boton de eliminar equipo de la medicion
-        mBtnMinusEquip .setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!(ListItemFromRight == null)){
-                    //Toast.makeText(getContext(), "equipo ID: "+ListItemFromRight.getId()+",  equipo Name : "+ListItemFromRight.getEquipo(), Toast.LENGTH_SHORT).show();
-                    //coloreando todas las posiciones del listview
-                    for (int i = 0; i < mlistEquipFromSelected.getChildCount(); i++)
-                        mlistEquipFromSelected.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
-                    //removiendo de lista RIGHT el elemento selccionado
-                    listEquipAdapter2.remove(ListItemFromRight);
-                    listEquipAdapter2.notifyDataSetChanged();
-                    //agregando a la lista LEFT el elemento seleccionado
-                    equipList.add(ListItemFromRight);
-                    listEquipAdapter.notifyDataSetChanged();
-                    //volviendo a variable auxiliar equipo nulo
-                    ListItemFromRight = null;
-                }
-            }
-        });
-
-
-        //listener boton de eliminar equipo de la medicion
-        mBtnNuevaMedicion .setOnClickListener(new View.OnClickListener() {
+        //listener crear nuevo registro de medición
+        /*mBtnNuevaMedicion .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 boolean res = true;
@@ -253,7 +202,7 @@ public class MenuMediciones extends Fragment {
                 }
                 adapter.close();
             }
-        });
+        });*/
 
         return view;
     }

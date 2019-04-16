@@ -55,7 +55,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="0.5"
-                        android:text="Seguridad eléctrica"
+                        android:text="Seguridad receptáculos"
                         android:textSize="25sp"
                         android:textColor="@color/colorPrimaryDark"
                         android:textStyle="bold"

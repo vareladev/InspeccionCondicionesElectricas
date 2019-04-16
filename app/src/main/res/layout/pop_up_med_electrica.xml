@@ -8,7 +8,7 @@
         android:id="@+id/PopUpTitle"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="Seguridad eléctrica - nuevo registro"
+        android:text="Seguridad en recetáculos - nuevo registro"
         android:textColor="@color/white"
         android:paddingLeft="20dp"
         android:textSize="20sp"
@@ -55,7 +55,7 @@
                 android:layout_weight="1"
                 android:textSize="20sp"
                 android:textColor="@color/gray"
-                android:text="Si/no" />
+                android:text="Si (✓)/no (□)" />
         </LinearLayout>
 
         <LinearLayout

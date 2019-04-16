@@ -153,7 +153,7 @@ public class MenuMediciones extends Fragment {
 
 
         //lista equipos a usar en la medicion
-        ArrayList<Equipo> EquipList = new ArrayList<>();
+        final ArrayList<Equipo> EquipList = new ArrayList<>();
         //recorriendo lista de ids
         adapter.open();
         for (String idEquipo : idEquipList){
@@ -172,7 +172,7 @@ public class MenuMediciones extends Fragment {
         });
 
         //listener crear nuevo registro de medición
-        /*mBtnNuevaMedicion .setOnClickListener(new View.OnClickListener() {
+        mBtnNuevaMedicion .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 boolean res = true;
@@ -183,7 +183,7 @@ public class MenuMediciones extends Fragment {
                 adapter.open();
                 if(adapter.mewMeasurement(nuevaMedicion)){ //insert exitoso!!
                     int idMedicion = adapter.getLastId("medicion");
-                    for (Equipo e : equipList2) {
+                    for (Equipo e : EquipList) {
                         if (!adapter.newMxeReg(idMedicion, e)){
                             showMsg(getActivity(),"¡Error! El registro de nueva medición no se esta guardando correctamente, existe un problema con la asignación de equipo a la medición.",2);
                             res = false;
@@ -202,7 +202,7 @@ public class MenuMediciones extends Fragment {
                 }
                 adapter.close();
             }
-        });*/
+        });
 
         return view;
     }

@@ -574,6 +574,29 @@ public class Adapter {
             return countReceptacles;
         }
     }
+    //contar numero de variables registradas (iluminacion, ruido, temp, humedad)
+    public int countVariable(int idMedicion, int tipo){
+        String sql ="select count(*) from variable Where idMedicion="+idMedicion+" and tipo="+tipo+";";
+        Log.e(TAG, "countVariable >"+ sql);
+        Cursor c = null;
+        int countReceptacles = 0;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! countReceptacles >>>>>"+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                countReceptacles = c.getInt(0);
+                Log.e(TAG, "countVariable >"+ countReceptacles);
+            }
+            return countReceptacles;
+        }
+    }
+
+
+
     public  ArrayList<String[]> getVariableList(int idMedicion, int tipo){
         String[] variableRow;
         ArrayList<String[]> variableList = new ArrayList<String[]>();
@@ -593,7 +616,7 @@ public class Adapter {
                     variableRow = new String[3];
                     variableRow[0] = contador+"";
                     variableRow[1] = c.getFloat(0)+"";
-                    variableRow[2] = c.getInt(1)+"";
+                    variableRow[2] = c.getInt(1) == 1 ? "Si" : "No";
                     variableList.add(variableRow);
                 } while (c.moveToNext());
             }

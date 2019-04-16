@@ -78,8 +78,7 @@ public class fragment_details_history extends Fragment {
         final EditText txt_h_servicio = (EditText) view.findViewById(R.id.txt_h_servicio);
         final EditText txt_h_responsable = (EditText) view.findViewById(R.id.txt_h_responsable);
         final ImageView img_h_plano = (ImageView) view.findViewById(R.id.img_h_plano);
-        final ListView list_h_equipright = (ListView) view.findViewById(R.id.list_h_equipright);
-        final ListView list_h_equipleft = (ListView) view.findViewById(R.id.list_h_equipleft);
+        final ListView listEquipSelected = (ListView) view.findViewById(R.id.listEquipSelected);
         final Button btnMedDetalles = (Button) view.findViewById(R.id.btnMedDetalles);
 
 
@@ -100,10 +99,8 @@ public class fragment_details_history extends Fragment {
 
 
         //llenando listas
-        final ArrayAdapter<Equipo> measureEquipAdapter = new ArrayAdapter<Equipo>(getActivity(), android.R.layout.simple_spinner_dropdown_item, measureEquip);
-        list_h_equipright.setAdapter(measureEquipAdapter);
-        final ArrayAdapter<Equipo> equipListAdapter = new ArrayAdapter<Equipo>(getActivity(), android.R.layout.simple_spinner_dropdown_item, EquipList);
-        list_h_equipleft.setAdapter(equipListAdapter);
+        final ArrayAdapter<Equipo> equipListAdapter = new ArrayAdapter<Equipo>(getActivity(), android.R.layout.simple_spinner_dropdown_item, measureEquip);
+        listEquipSelected.setAdapter(equipListAdapter);
 
         //funcionalidad de boton
         btnMedDetalles .setOnClickListener(new View.OnClickListener() {

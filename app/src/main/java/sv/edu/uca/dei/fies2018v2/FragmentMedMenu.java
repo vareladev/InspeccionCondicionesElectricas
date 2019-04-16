@@ -41,7 +41,7 @@ public class FragmentMedMenu extends Fragment {
     private static final String[] TABLE_HEADERS_ELEC = { "R", "Polaridad", "VfaseN", "VNeutroT", "VfaseT" };
     private static ArrayList<String[]> listReceptaclesId;
     private static SimpleTableDataAdapter tableAdapterElec;
-    private static final String[] TABLE_HEADERS_VAR = { "Punto", "Valor","Cumple","edit" };
+    private static final String[] TABLE_HEADERS_VAR = { "Punto", "Valor","Cumple" };
     private static ArrayList<String[]> listConditions;
     private static SimpleTableDataAdapter tblAdapConditions;
 
@@ -56,8 +56,6 @@ public class FragmentMedMenu extends Fragment {
         View view = inflater.inflate(R.layout.fragment_med_menu, container, false);
 
 
-
-
         //inicializacion de adaptador de base de datos
         adapter = new Adapter(getActivity());
         //obteniendo ultimo id de la tabla medicion
@@ -66,13 +64,13 @@ public class FragmentMedMenu extends Fragment {
         adapter.close();
 
         //Botones del menu
-        LinearLayout MgetElecData = (LinearLayout) view.findViewById(R.id.getElecData);
-        LinearLayout MgetLuxData = (LinearLayout) view.findViewById(R.id.getLuxData);
+        LinearLayout MgetElecData = (LinearLayout) view.findViewById(R.id.getElecData); //verificacion receptaculos
+        LinearLayout MgetLuxData = (LinearLayout) view.findViewById(R.id.getLuxData);  //verificacion ilumnacion ambiental
         //LinearLayout MgetLuxRoomData = (LinearLayout) view.findViewById(R.id.getLuxRoomData);
-        LinearLayout MgetNoiseData = (LinearLayout) view.findViewById(R.id.getNoiseData);
-        LinearLayout MgetTempData = (LinearLayout) view.findViewById(R.id.getTempData);
-        LinearLayout MgetComment = (LinearLayout) view.findViewById(R.id.getComment);
-        LinearLayout MgetHumData = (LinearLayout) view.findViewById(R.id.getHumData);
+        LinearLayout MgetNoiseData = (LinearLayout) view.findViewById(R.id.getNoiseData); //verificacion ruido ambiental
+        LinearLayout MgetTempData = (LinearLayout) view.findViewById(R.id.getTempData); //verificacion temperatura ambiental
+        LinearLayout MgetComment = (LinearLayout) view.findViewById(R.id.getComment); //comentario de la medicion
+        LinearLayout MgetHumData = (LinearLayout) view.findViewById(R.id.getHumData); //verificacion humedad relativa
 
         MgetElecData.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -135,12 +133,30 @@ public class FragmentMedMenu extends Fragment {
 
         //inicializacion de objetos
         TextView chk_med_title = (TextView) dialogView.findViewById(R.id.chk_med_title);
+        TextView chk_med_nec = (TextView) dialogView.findViewById(R.id.chk_med_nec);
+        TextView chk_med_strd_value = (TextView) dialogView.findViewById(R.id.chk_med_strd_value);
         TableView<String[]> tblEnviCons = (TableView<String[]>) dialogView.findViewById(R.id.tblEnviCons);
         Button btnCloseChkCon = (Button)dialogView.findViewById(R.id.btnCloseChkCon);
         Button btnNewCon = (Button)dialogView.findViewById(R.id.btnNewCon);
 
         //Definicione titulo de popup
         chk_med_title.setText(title);
+
+        //definiendo cantintidad de mediciones necesarias y valores estandar
+        switch (Paramtipo){
+            case 2:     chk_med_nec.setText("Muestras mínimas necesarias: 5");//iluminacion ambiental
+                        chk_med_strd_value.setText("Valor estándar: 600 Lux Max.");
+                        break;
+            case 4:     chk_med_nec.setText("Muestras mínimas necesarias: 1"); //ruido ambiemtal
+                        chk_med_strd_value.setText("Valor estándar: 65 dB Max.");
+                        break;
+            case 5:     chk_med_nec.setText("Muestras mínimas necesarias: 2"); //temperatura ambiental
+                        chk_med_strd_value.setText("Valor estándar: 22°C a 26°C.");
+                        break;
+            case 6:     chk_med_nec.setText("Muestras mínimas necesarias: 2"); //humedad relativa ambiental
+                        chk_med_strd_value.setText("Valor estándar: 30 % a 60%");
+                        break;
+        }
 
         //cargar header
         tblEnviCons.setHeaderAdapter(new SimpleTableHeaderAdapter(getActivity(), TABLE_HEADERS_VAR));
@@ -226,7 +242,7 @@ public class FragmentMedMenu extends Fragment {
         dialog.show();
     }
 
-    private void dialogNewMed(final int ParamIdMed, final int Paramtipo, String subtitle){
+    private void dialogNewMed(final int ParamIdMed, final int Paramtipo, String title){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.pop_up_med,null);
@@ -240,11 +256,11 @@ public class FragmentMedMenu extends Fragment {
         final EditText txt_med_dato = (EditText)dialogView.findViewById(R.id.txt_med_dato);
 
         //titulo
-        add_med_title.setText(subtitle);
+        add_med_title.setText(title);
         //subtitulo
-        /*adapter.open();
-        mTxtvTitleMedElec.setText("Recéptaculo R"+(adapter.countReceptacles(idMedicion)+1));
-        adapter.close();*/
+        adapter.open();
+        add_med_subtitle.setText("Punto de medición P"+adapter.countVariable(idMedicion,Paramtipo)+1);
+        adapter.close();
 
         final AlertDialog dialog = builder.create();
         //Listener de los botones guardar y cancelar
@@ -259,20 +275,38 @@ public class FragmentMedMenu extends Fragment {
             public void onClick(View v) {
                 //dialog.dismiss();
                 if(checkEditTextIsEmpty(txt_med_dato)){
+                    //convirtiendo el datoa flotante
+                    float EnviCond = Float.parseFloat(txt_med_dato.getText().toString());
+
+                    //verificando standard de cada variable
+                    int isok = 0;
+                    switch (Paramtipo){
+                        case 2: isok = (EnviCond>=0 && EnviCond<=600)? 1 : 0; //iluminacion
+                                break;
+                        case 4: isok = (EnviCond>=0 && EnviCond<=65)? 1 : 0; //ruido ambiemtal
+                                break;
+                        case 5: isok = (EnviCond>=22 && EnviCond<=65)? 1 : 0; //temperatura ambiental
+                                break;
+                        case 6: isok = (EnviCond>=30 && EnviCond<=60)? 1 : 0; //humedad relativa ambiental
+                                break;
+                    }
+
                     adapter.open();
                     //insertando la variable
-                    float EnviCond = Float.parseFloat(txt_med_dato.getText().toString());
-                    int isok = 1;
                     if(adapter.newVariable(ParamIdMed, EnviCond, Paramtipo,isok)){
                         int lastRegId = 1;
                         if(listConditions.size() > 0){
                             lastRegId = Integer.parseInt(listConditions.get(listConditions.size()-1)[0]) + 1;
                         }
-                        String[] variableRow = {lastRegId+"", EnviCond+"", isok+""};
+
+                        //interpretando la bandera de cumplimiento de estandar:
+                        String isokString = isok == 1 ? "Si" : "No";
+                        //creando nueva linea
+                        String[] variableRow = {lastRegId+"", EnviCond+"", isokString};
                         listConditions.add(variableRow);
                         tblAdapConditions.notifyDataSetChanged();
                         dialog.dismiss();
-                        showMsg(getActivity(),"¡Nuevo registro de condición ambiental agregado exitosamente!",1);
+                        //Toast.makeText(getActivity(), "¡Nuevo registro de condición ambiental agregado exitosamente!", Toast.LENGTH_SHORT).show();
                     }
                     else{
                         showMsg(getActivity(),"Ocurrio un error al intentar crear el nuevo registro de variable...",2);
@@ -390,7 +424,7 @@ public class FragmentMedMenu extends Fragment {
                             listReceptaclesId.add(subVariableRow);
                             tableAdapterElec.notifyDataSetChanged();
                             dialog.dismiss();
-                            showMsg(getActivity(),"¡Nuevo registro de verificación de seguridad eléctrica agregado exitosamente!",1);
+                            //showMsg(getActivity(),"¡Nuevo registro de verificación de seguridad eléctrica agregado exitosamente!",1);
                         }
                         else{
                             showMsg(getActivity(),"Ocurrio un error al intentar crear el nuevo registro de subvariable...",2);

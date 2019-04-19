@@ -43,17 +43,40 @@ public class Home extends AppCompatActivity{
 
     @Override
     public void onBackPressed() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        final FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             Log.i("MainActivity", "popping backstack");
             FragmentManager.BackStackEntry bse = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount()-1);
             bse.getName();
-            if(bse.getName() == "fragmentMedMenu"){
+            if(bse.getName() == "fragmentMedMenuMed"){
                 while (fragmentManager.getBackStackEntryCount() > 0){
                     fragmentManager.popBackStackImmediate();
                 }
-            }else
+            }
+            else if(bse.getName() == "seguridadElectricaToma"){
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("¿Salir de esta inspección?");
+                builder.setMessage("Advertencia: Todos los datos registrados hasta el momento se perderán.");
+                builder.setCancelable(false);
+                builder.setIcon(R.drawable.ic_warning);
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+                builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        while (fragmentManager.getBackStackEntryCount() > 0){
+                            fragmentManager.popBackStackImmediate();
+                        }
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();//showing the dialog
+            }
+            else{
                 fragmentManager.popBackStack();
+            }
         } else {
             Log.i("MainActivity", "se acabaron los back de fragmentos atras y llegamos a login");
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -149,15 +172,15 @@ public class Home extends AppCompatActivity{
 
 
 
-    public void openFragSegElec(){
+    public void openFragSegElec(ArrayList<String> idEquipList){
         setTitle("Inspección de seguridad eléctrica");
 
         //MenuMediciones menuMediciones = new MenuMediciones();
         Fragment_Seg_Elec_1 fragment_Seg_Elec_1 = new Fragment_Seg_Elec_1();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.fragment, fragment_Seg_Elec_1)
-                .addToBackStack("equipFromMenu")
+                .replace(R.id.fragment, Fragment_Seg_Elec_1.newInstance(idEquipList))
+                .addToBackStack("create new register")
                 .commit();
         return;
     }
@@ -171,11 +194,21 @@ public class Home extends AppCompatActivity{
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.fragment, fragmentMedMenu)
-                .addToBackStack("fragmentMedMenu")
+                .addToBackStack("fragmentMedMenuMed")
                 .commit();
         return;
     }
 
+    public void openFragc1tB(int idSegElec, int clase, int tipo){
+        setTitle("Inspección de seguridad eléctrica equipo clase 1 tipo B");
+        FragmentClase1Tipo1 fragmentClase1Tipo1 = new FragmentClase1Tipo1();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment, fragmentClase1Tipo1.newInstance(idSegElec, clase, tipo))
+                .addToBackStack("seguridadElectricaToma")
+                .commit();
+        return;
+    }
 
     public void showMsg(Context context, String msg, int tipoMensaje){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);

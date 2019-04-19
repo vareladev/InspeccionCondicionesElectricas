@@ -707,7 +707,7 @@ public class Adapter {
             c = mDb.rawQuery(sql, null);
         }
         catch (SQLException mSQLException){
-            Log.e(TAG, "getEquipoPreview >>>>>"+ mSQLException.toString());
+            Log.e(TAG, "getLastId:"+ mSQLException.toString());
             throw mSQLException;
         }
         finally {
@@ -749,6 +749,108 @@ public class Adapter {
             return measureList;
         }
     }
+
+
+    //*************************************************************************
+    // Tabla equipoAnalizado
+    //*************************************************************************
+    //crear nuevo registro
+    public boolean insertNewEquiAna(String nombre, String marca, String modelo, String ns, String ninv, int idClase,int idTipo){
+        boolean result = false;
+        ContentValues values = new ContentValues();
+        try{
+            values.put("nombre", nombre);
+            values.put("marca", marca);
+            values.put("modelo", modelo);
+            values.put("ns", ns);
+            values.put("ninventario", ninv);
+            values.put("idClase", idClase);
+            values.put("idTipo", idTipo);
+            mDb.insert("equipoAnalizado", null, values);
+            result = true;
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "insertNewEquiAna: "+ mSQLException.toString());
+        }
+        return result;
+    }
+
+    public boolean insertNewElecSec(int idHospital, String servicio, String responsable, int equipoAnalizado){
+        boolean result = false;
+        ContentValues values = new ContentValues();
+        try{
+            values.put("idHospital", idHospital);
+            values.put("servicioAnalizado", servicio);
+            values.put("responsable", responsable);
+            values.put("idEquipoAnalizado", equipoAnalizado);
+            mDb.insert("segelectrica", null, values);
+            result = true;
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "segelectrica: "+ mSQLException.toString());
+        }
+        return result;
+    }
+
+    public boolean InsertIntosxe(int idMedicion, int idEquipo){
+        boolean result = false;
+        ContentValues values = new ContentValues();
+        try{
+            values.put("idSegElectrica", idMedicion);
+            values.put("idEquipo", idEquipo);
+            mDb.insert("sxe", null, values);
+            result = true;
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "InsertIntosxe:"+ mSQLException.toString());
+        }
+        return result;
+    }
+    //*************************************************************************
+    // Tabla tipo y clase (para clasificar un equipo medico
+    //*************************************************************************
+    public ArrayList<Clase> getClass4Equip(){
+        String sql ="select * from clase;";
+        ArrayList<Clase> classList = null;
+        Cursor c = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! getClass4Equip >>>>>"+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                classList = new ArrayList<Clase>();
+                do {
+                    classList.add(new Clase(c.getInt(0),c.getString(1)));
+                } while (c.moveToNext());
+            }
+        }
+        return classList;
+    }
+
+    public ArrayList<Tipo> getType4Equip(){
+        String sql ="select * from tipo;";
+        ArrayList<Tipo> tipoList = null;
+        Cursor c = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! getType4Equip >>>>>"+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                tipoList = new ArrayList<Tipo>();
+                do {
+                    tipoList.add(new Tipo(c.getInt(0),c.getString(1)));
+                } while (c.moveToNext());
+            }
+        }
+        return tipoList;
+    }
+
 
     //*************************************************************************
     // CONSULTAS JSON
@@ -840,6 +942,11 @@ public class Adapter {
             return result > 0;
         }
     }
+
+
+
+
+
 /*
     public Cursor getTestData()
     {

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/txt_title"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="titulo"
+        android:textColor="@color/white"
+        android:paddingLeft="20dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="left|center"
+        android:background="@color/table_header"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginBottom="25dp">
+        <TextView
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:text="Registro de datos:"
+            android:textSize="@dimen/subtitle"
+            android:textStyle="bold"
+            android:textColor="@color/accent"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_marginBottom="10dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="30dp">
+        <RadioButton
+            android:id="@+id/radio_opc_1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:gravity="center"
+            android:layout_marginLeft="20dp"/>
+        <TextView
+            android:id="@+id/txt_opc_1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:textSize="20sp"
+            android:text="Resistencia entre el conector de tierra de protección del enchufe de la red y las partes conductivas accesibles protegidas a tierra. (≤300 mΩ)."
+            />
+        <EditText
+            android:layout_gravity="center"
+            android:id="@+id/txt_res_1"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.5"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="0.4"
+            android:textSize="20sp"
+            android:layout_marginRight="30dp"
+            android:text="mΩ" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="30dp">
+        <RadioButton
+            android:id="@+id/radio_opc_2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:gravity="center"
+            android:layout_marginLeft="20dp"/>
+        <TextView
+            android:id="@+id/txt_opc_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:textSize="20sp"
+            android:text="Resistencia entre el conector de tierra del conector de entrada de red al equipo y las partes conductivas accesibles protegidas a tierra. (≤200 mΩ)." />
+        <EditText
+            android:layout_gravity="center"
+            android:id="@+id/txt_res_2"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.5"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="0.4"
+            android:textSize="20sp"
+            android:layout_marginRight="30dp"
+            android:text="mΩ" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="30dp">
+        <RadioButton
+            android:id="@+id/radio_opc_3"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:gravity="center"
+            android:layout_marginLeft="20dp"/>
+        <TextView
+            android:id="@+id/txt_opc_3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:textSize="20sp"
+            android:text="Equipos permanentemente instalados: resistencia entre el terminal de tierra de protección del equipo biomédico y las partes conductivas accesibles protegidas a tierra. (≤300 mΩ. Durante esta prueba no se desconecta el conductor de tierra de protección)." />
+        <EditText
+            android:layout_gravity="center"
+            android:id="@+id/txt_res_3"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.5"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="0.4"
+            android:textSize="20sp"
+            android:layout_marginRight="30dp"
+            android:text="mΩ" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="30dp">
+        <RadioButton
+            android:id="@+id/radio_opc_4"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:gravity="center"
+            android:layout_marginLeft="20dp"/>
+        <TextView
+            android:id="@+id/txt_opc_4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:textSize="20sp"
+            android:text="En sistemas con múltiples salidas eléctricas: Resistencia entre el conector de tierra de protección del enchufe de la red de las múltiples salidas eléctricas y todas las partes conductivas accesibles protegidas a tierra. (≤500 mΩ)." />
+        <EditText
+            android:layout_gravity="center"
+            android:id="@+id/txt_res_4"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.5"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="0.4"
+            android:textSize="20sp"
+            android:layout_marginRight="30dp"
+            android:text="mΩ" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_new_reg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Guardar inspección"
+        android:layout_marginBottom="30dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_gravity="center"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:background="@drawable/shape_round_corners"/>
+
+
+
+
+</LinearLayout>

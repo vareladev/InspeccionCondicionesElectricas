@@ -78,13 +78,16 @@ public class FragmenMenu extends Fragment {
         //Base de datos
         adapter = new Adapter(getActivity());
         adapter.createDatabase();
+
+        //botones de menu de este fragmento
         LinearLayout btnEquipo1 = (LinearLayout) view.findViewById(R.id.Menu_boton1); //Levanta PopUp Seleccion de equipo
+        LinearLayout Menu_boton6 = (LinearLayout) view.findViewById(R.id.Menu_boton6); //Seguridad electrica
         //++++++++++++++++++++++++++++++++++
         LinearLayout btnEquipo3 = (LinearLayout) view.findViewById(R.id.Menu_boton3); //history
         LinearLayout btnEquipo2 = (LinearLayout) view.findViewById(R.id.Menu_boton2); //equipo
         LinearLayout Menu_boton4 = (LinearLayout) view.findViewById(R.id.Menu_boton4); //sincronizar
         LinearLayout Menu_boton5 = (LinearLayout) view.findViewById(R.id.Menu_boton5); //exportar
-        LinearLayout Menu_boton6 = (LinearLayout) view.findViewById(R.id.Menu_boton6); //Seguridad electrica
+
 
 
 
@@ -119,7 +122,7 @@ public class FragmenMenu extends Fragment {
             @Override
             public void onClick(View v)
             {
-                dialogOpenSelectEquip();
+                dialogOpenSelectEquip(1);
             }
         });
         //++++++++++++++++++++++++++++++++++
@@ -147,13 +150,13 @@ public class FragmenMenu extends Fragment {
         });
 
         //abriendo fragmento de inpeccion de seguridad electrica
-        //funcion definida en la clase Home
         Menu_boton6.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                ((Home)getActivity()).openFragSegElec();
+                //((Home)getActivity()).openFragSegElec();
+                dialogOpenSelectEquip(2);
             }
         });
 
@@ -161,7 +164,9 @@ public class FragmenMenu extends Fragment {
     }
 
     //++++++++++++++++++++++++++++++++++
-    private void dialogOpenSelectEquip(){
+    //1 - medicion de condiciones ambientales e inspeccion de receptaculos
+    //2 - Medicion de seguridad electrica
+    private void dialogOpenSelectEquip(final int tipoMedicion){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.pop_up_select_equipment_1,null);
@@ -173,9 +178,6 @@ public class FragmenMenu extends Fragment {
         final Button btnAddEquip_1 = (Button)dialogView.findViewById(R.id.btnAddEquip_1);
         final Button btnRetEquip_1 = (Button)dialogView.findViewById(R.id.btnRetEquip_1);
         final Button btn_create_measure = (Button)dialogView.findViewById(R.id.btnCreateMeasure);
-
-        //creando ventana
-        final AlertDialog dialog = builder.create();
 
         //Lista 1
         //obteniendo lista de equipos desde la base de datos:
@@ -224,6 +226,15 @@ public class FragmenMenu extends Fragment {
                 }
             }
         });
+
+        //validando si se habilita el boton o no.
+        if(listSelectEquip_2.getAdapter().getCount() == 0){
+            btn_create_measure.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.shape_disabled_button));
+            isNextEnabled = false;
+        }
+
+        //creando ventana
+        final AlertDialog dialog = builder.create();
 
 
         //Listener boton de añadir equipo a la medicion
@@ -290,8 +301,16 @@ public class FragmenMenu extends Fragment {
                     }
                     //eliminando la ventana
                     dialog.dismiss();
-                    //accediendo al fragmento de definicion de nueva medición
-                    ((Home)getActivity()).openFragNewMed(EquipsForNextPage);
+
+                    if(tipoMedicion == 1){
+                        //accediendo al fragmento de definicion de nueva medición
+                        ((Home)getActivity()).openFragNewMed(EquipsForNextPage);
+                    }
+                    else if(tipoMedicion == 2){
+                        //accediendo al fragmento de definicion de nueva medición de seguridad electrica
+                        ((Home)getActivity()).openFragSegElec(EquipsForNextPage);
+                    }
+
                 }
             }
         });

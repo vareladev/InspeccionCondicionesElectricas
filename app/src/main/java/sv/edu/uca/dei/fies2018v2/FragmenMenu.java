@@ -364,6 +364,9 @@ public class FragmenMenu extends Fragment {
                 tableList.add("mxe");
                 tableList.add("variable");
                 tableList.add("subvariable");
+                tableList.add("equipoAnalizado");
+                tableList.add("segelectrica");
+                tableList.add("medicionelec");
 
                 sqliteToExcel = new SQLiteToExcel(getActivity(), "fies2018.db",downloadDir.toString()+"/");
                 sqliteToExcel.exportSpecificTables(tableList, txt_get_filename.getText().toString()+

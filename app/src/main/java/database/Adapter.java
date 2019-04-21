@@ -851,7 +851,105 @@ public class Adapter {
         return tipoList;
     }
 
+    //*************************************************************************
+    // Tabla temp_medicionelec
+    //*************************************************************************
+    //agregando nuevo registro
+    public boolean insertNewTempMed(int id_segelectrica, int id_bloque, int id_pregunta, float medicion, float estandar, String magnitud, String comentario){
+        boolean result = false;
+        ContentValues values = new ContentValues();
+        try{
+            values.put("id_segelectrica", id_segelectrica);
+            values.put("id_bloque", id_bloque);
+            values.put("id_pregunta", id_pregunta);
+            values.put("medicion", medicion);
+            values.put("estandar", estandar);
+            values.put("magnitud", magnitud);
+            values.put("comentario", comentario);
+            mDb.insert("temp_medicionelec", null, values);
+            result = true;
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "insertNewTempMed: "+ mSQLException.toString());
+        }
+        return result;
+    }
 
+    //Elimininar registro temporal segun bloque
+    public int deleteTempMed(int id_bloque) {
+        int result = 0;
+        try {
+            result = mDb.delete("temp_medicionelec", "id_bloque" + "=" + id_bloque, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! deleteTempMed: "+ mSQLException.toString());
+        }
+        finally{
+            return result;
+        }
+    }
+
+    //borrar toda la tabla.
+    public void deleteAllTempMed() {
+        try {
+            mDb.delete("temp_medicionelec", null, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! deleteAllTempMed: "+ mSQLException.toString());
+        }
+    }
+
+    //obtener todos los datos de la tabla temporal de mediciones de seguridad electrica
+    public ArrayList<NuevaMedicionSegElec> getAllTempMed() {
+        String sql ="select id_segelectrica, id_bloque, id_pregunta, medicion,estandar, magnitud, comentario from temp_medicionelec;";
+        ArrayList<NuevaMedicionSegElec> tempData = null;
+        Cursor c = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! getAllTempMed: "+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                tempData = new ArrayList<NuevaMedicionSegElec>();
+                do {
+                    //tempData.add(new Tipo(c.getInt(0),c.getString(1)));
+                    tempData.add(new NuevaMedicionSegElec(
+                        c.getInt(0),
+                            c.getInt(1),
+                            c.getInt(2),
+                            c.getFloat(3),
+                            c.getFloat(4),
+                            c.getString(5),
+                            c.getString(6)
+                    ));
+                } while (c.moveToNext());
+            }
+        }
+        return tempData;
+    }
+
+    //agregando nuevo registro
+    public boolean insertNewSegElec(NuevaMedicionSegElec e){
+        boolean result = false;
+        ContentValues values = new ContentValues();
+        try{
+            values.put("id_segelectrica", e.getId_segelectrica());
+            values.put("id_bloque", e.getId_bloque());
+            values.put("id_pregunta", e.getId_pregunta());
+            values.put("medicion", e.getMedicion());
+            values.put("estandar", e.getEstandar());
+            values.put("magnitud", e.getMagnitud());
+            values.put("comentario", e.getComentario());
+            mDb.insert("medicionelec", null, values);
+            result = true;
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "insertNewTempMed: "+ mSQLException.toString());
+        }
+        return result;
+    }
     //*************************************************************************
     // CONSULTAS JSON
     //*************************************************************************

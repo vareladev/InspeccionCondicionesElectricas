@@ -97,7 +97,7 @@ public class Fragment_Seg_Elec_1 extends Fragment {
         //equipo de medicion a utilizar
         final ListView lista_equipo_seg_elec = (ListView) view.findViewById(R.id.lista_equipo_seg_elec);
         //boton crear nuevo registro
-        Button btn_nuevo_registro = (Button) view.findViewById(R.id.btn_nuevo_registro);
+        final Button btn_nuevo_registro = (Button) view.findViewById(R.id.btn_nuevo_registro);
 
         //cargando datos predefinidos
         //cargando Sping de clase de equipo
@@ -128,6 +128,14 @@ public class Fragment_Seg_Elec_1 extends Fragment {
         spinnerHospital.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0){
+                    btn_nuevo_registro.setEnabled(false);
+                    btn_nuevo_registro.setBackground(getResources().getDrawable(R.drawable.shape_disabled_button));
+                }
+                else {
+                    btn_nuevo_registro.setEnabled(true);
+                    btn_nuevo_registro.setBackground(getResources().getDrawable(R.drawable.shape_round_corners));
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {

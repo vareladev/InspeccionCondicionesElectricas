@@ -48,6 +48,7 @@ public class Home extends AppCompatActivity{
             Log.i("MainActivity", "popping backstack");
             FragmentManager.BackStackEntry bse = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount()-1);
             bse.getName();
+
             if(bse.getName() == "fragmentMedMenuMed"){
                 while (fragmentManager.getBackStackEntryCount() > 0){
                     fragmentManager.popBackStackImmediate();
@@ -97,6 +98,17 @@ public class Home extends AppCompatActivity{
             AlertDialog alert = builder.create();
             alert.show();//showing the dialog
 
+        }
+    }
+
+    public void openMainMenu(){
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            Log.i("MainActivity", "popping backstack");
+            FragmentManager.BackStackEntry bse = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount()-1);
+            while (fragmentManager.getBackStackEntryCount() > 0){
+                fragmentManager.popBackStackImmediate();
+            }
         }
     }
 

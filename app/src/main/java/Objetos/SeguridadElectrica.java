@@ -3,6 +3,7 @@ package Objetos;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import database.Adapter;
 import sv.edu.uca.dei.fies2018v2.R;
 
 /**
@@ -20,8 +22,13 @@ import sv.edu.uca.dei.fies2018v2.R;
  */
 
 public class SeguridadElectrica {
+    //adaptador base de datos
+    private Adapter adapter;
+    //idMedicion
+    private int idSegElecMeasure;
     //variable globales  para 1: inspeccion visual.
-    private int p1,p2,p3,p4,p5,p6,p7,p8;
+    //private int p1,p2,p3,p4,p5,p6,p7,p8;
+    private int[] visual;
     private boolean eva1finished;
     //variables globales para 2: Resistencia de puesta a tierra de protección - Equipos biomédicos Clase I
     private boolean evaResTierraFinished;
@@ -53,6 +60,35 @@ public class SeguridadElectrica {
     private boolean evaRes5Finished;
     private float eva_res_5;
 
+
+
+    //constructor
+    public SeguridadElectrica (Context context, int idMedicion){
+        //base de datos.
+        adapter = new Adapter(context);
+        adapter.createDatabase();
+        //borrando toda la tabla temporal.
+        adapter.open();
+        adapter.deleteAllTempMed();
+        adapter.close();
+
+        //idmedicion
+        this.idSegElecMeasure = idMedicion;
+
+        //inicializando arreglo de inspeccion visual
+        visual = new int[8];
+
+        //inicializando booleanos de cada medicion
+        this.eva1finished = false;
+        this.evaResTierraFinished=false;
+        this.evaFugaEquipoFinished = false;
+        this.evaFugaPacienteFinished = false;
+        this.evaRes1Finished = false;
+        this.evaRes2Finished = false;
+        this.evaRes3Finished = false;
+        this.evaRes4Finished = false;
+        this.evaRes5Finished = false;
+    }
     /*
     * 1- eva1finished
     * 2- evaResTierraFinished
@@ -124,18 +160,6 @@ public class SeguridadElectrica {
     }
 
 
-    //constructor
-    public SeguridadElectrica (){
-        this.eva1finished = false;
-        this.evaFugaEquipoFinished = false;
-        this.evaRes1Finished = false;
-        this.evaRes2Finished = false;
-        this.evaRes3Finished = false;
-        this.evaRes4Finished = false;
-        this.evaRes5Finished = false;
-
-    }
-
     //1: Pop-up: inspeccion visual
     public void inspeccionVisual(final Context context, int idMedicion, int idClase, int idTipo, final ImageView img){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -154,21 +178,21 @@ public class SeguridadElectrica {
         final RadioGroup rg8 = (RadioGroup) dialogView.findViewById(R.id.rg_iv_8);
         //veficando si ya se ha realizado la evaluacion
         if(eva1finished){
-            if(p1 == 1){ ((RadioButton)rg1.getChildAt(0)).setChecked(true); }
+            if(visual[0] == 1){ ((RadioButton)rg1.getChildAt(0)).setChecked(true); }
             else { ((RadioButton)rg1.getChildAt(1)).setChecked(true); }
-            if(p2 == 1){ ((RadioButton)rg2.getChildAt(0)).setChecked(true); }
+            if(visual[1] == 1){ ((RadioButton)rg2.getChildAt(0)).setChecked(true); }
             else { ((RadioButton)rg2.getChildAt(1)).setChecked(true); }
-            if(p3 == 1){ ((RadioButton)rg3.getChildAt(0)).setChecked(true); }
+            if(visual[2] == 1){ ((RadioButton)rg3.getChildAt(0)).setChecked(true); }
             else { ((RadioButton)rg3.getChildAt(1)).setChecked(true); }
-            if(p4 == 1){ ((RadioButton)rg4.getChildAt(0)).setChecked(true); }
+            if(visual[3] == 1){ ((RadioButton)rg4.getChildAt(0)).setChecked(true); }
             else { ((RadioButton)rg4.getChildAt(1)).setChecked(true); }
-            if(p5 == 1){ ((RadioButton)rg5.getChildAt(0)).setChecked(true); }
+            if(visual[4] == 1){ ((RadioButton)rg5.getChildAt(0)).setChecked(true); }
             else { ((RadioButton)rg5.getChildAt(1)).setChecked(true); }
-            if(p6 == 1){ ((RadioButton)rg6.getChildAt(0)).setChecked(true); }
+            if(visual[5] == 1){ ((RadioButton)rg6.getChildAt(0)).setChecked(true); }
             else { ((RadioButton)rg6.getChildAt(1)).setChecked(true); }
-            if(p7 == 1){ ((RadioButton)rg7.getChildAt(0)).setChecked(true); }
+            if(visual[6] == 1){ ((RadioButton)rg7.getChildAt(0)).setChecked(true); }
             else { ((RadioButton)rg7.getChildAt(1)).setChecked(true); }
-            if(p8 == 1){ ((RadioButton)rg8.getChildAt(0)).setChecked(true); }
+            if(visual[7] == 1){ ((RadioButton)rg8.getChildAt(0)).setChecked(true); }
             else { ((RadioButton)rg8.getChildAt(1)).setChecked(true); }
         }
         //creando popup
@@ -190,15 +214,30 @@ public class SeguridadElectrica {
                 }
                 else {
                     //registrando respuestas
-                    p1 = rg1.getCheckedRadioButtonId() == R.id.rg_iv_1_si ? 1 : 0;
-                    p2 = rg2.getCheckedRadioButtonId() == R.id.rg_iv_2_si ? 1 : 0;
-                    p3 = rg3.getCheckedRadioButtonId() == R.id.rg_iv_3_si ? 1 : 0;
-                    p4 = rg4.getCheckedRadioButtonId() == R.id.rg_iv_4_si ? 1 : 0;
-                    p5 = rg5.getCheckedRadioButtonId() == R.id.rg_iv_5_si ? 1 : 0;
-                    p6 = rg6.getCheckedRadioButtonId() == R.id.rg_iv_6_si ? 1 : 0;
-                    p7 = rg7.getCheckedRadioButtonId() == R.id.rg_iv_7_si ? 1 : 0;
-                    p8 = rg8.getCheckedRadioButtonId() == R.id.rg_iv_8_si ? 1 : 0;
-                    //Log.e("inspeccion visual","resultado del check:"+p1+p2+p3+p4+p5+p6+p7+p8);
+                    visual[0] = rg1.getCheckedRadioButtonId() == R.id.rg_iv_1_si ? 1 : 0;
+                    visual[1] = rg2.getCheckedRadioButtonId() == R.id.rg_iv_2_si ? 1 : 0;
+                    visual[2] = rg3.getCheckedRadioButtonId() == R.id.rg_iv_3_si ? 1 : 0;
+                    visual[3] = rg4.getCheckedRadioButtonId() == R.id.rg_iv_4_si ? 1 : 0;
+                    visual[4] = rg5.getCheckedRadioButtonId() == R.id.rg_iv_5_si ? 1 : 0;
+                    visual[5] = rg6.getCheckedRadioButtonId() == R.id.rg_iv_6_si ? 1 : 0;
+                    visual[6] = rg7.getCheckedRadioButtonId() == R.id.rg_iv_7_si ? 1 : 0;
+                    visual[7] = rg8.getCheckedRadioButtonId() == R.id.rg_iv_8_si ? 1 : 0;
+                    //Guardando en base de datos
+                    boolean result;
+                    adapter.open();
+                    //eliminando elementos que existe (esto es por actualizacion de datos)
+                    int del=adapter.deleteTempMed(1);
+                    Log.e("Evaluacion 1","se han eliminado "+del+" registros.");
+                    for (int i=0; i<8;i++){
+                        result=adapter.insertNewTempMed(idSegElecMeasure,1,i+1,visual[i],1,null,"=");
+                        if(result){
+                            Log.e("Inpeccion visual", "Se insertó valor visual["+i+"]="+visual[i]+", en base de datos.");
+                        }
+                        else{
+                            Log.e("Inpeccion visual", "Error :(.");
+                        }
+                    }
+                    adapter.close();
                     img.setImageResource(R.drawable.segelec_1_ok);
                     eva1finished = true;
                     dialog.dismiss();
@@ -403,6 +442,28 @@ public class SeguridadElectrica {
                 }
 
                 if(opcionMarcada > 0){
+                    //Guardando en base de datos
+                    adapter.open();
+                    //eliminando elementos que existe (esto es por actualizacion de datos)
+                    int del=adapter.deleteTempMed(2);
+                    Log.e("Evaluacion 2","se han eliminado "+del+" registros.");
+                    adapter.insertNewTempMed(idSegElecMeasure,2,9,comprobacionConector,1,null,"=");
+                    adapter.insertNewTempMed(idSegElecMeasure,2,10,IntegridadConector,1,null,"=");
+                    switch (opcionMarcada){
+                        case 1:
+                            adapter.insertNewTempMed(idSegElecMeasure,2,11,evaResTierra,300,"mΩ","<");
+                            break;
+                        case 2:
+                            adapter.insertNewTempMed(idSegElecMeasure,2,12,evaResTierra,200,"mΩ","<");
+                            break;
+                        case 3:
+                            adapter.insertNewTempMed(idSegElecMeasure,2,13,evaResTierra,300,"mΩ","<");
+                            break;
+                        case 4:
+                            adapter.insertNewTempMed(idSegElecMeasure,2,14,evaResTierra,500,"mΩ","<");
+                            break;
+                    }
+                    adapter.close();
                     //variable bandera para precargar datos si ya han sido ingresados
                     evaResTierraFinished = true;
                     //cambia el icono del menu
@@ -419,7 +480,7 @@ public class SeguridadElectrica {
     }
 
     //3: Pop-up: Corriente de fuga del equipo
-    public void corrienteFugaEquipo(final Context context, int idMedicion, int idClase, int idTipo, final ImageView img){
+    public void corrienteFugaEquipo(final Context context, int idMedicion, final int idClase, int idTipo, final ImageView img){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.pop_up_corriente_fuga_equipo,null);
@@ -468,6 +529,35 @@ public class SeguridadElectrica {
                         tipo_fuga_equipo = rg_1.getCheckedRadioButtonId() == R.id.radio_met_alternativo ? 0 : 1; //0 - alternativo, 1-directo o diferencial
                         //variable bandera para precargar datos si ya han sido ingresados
                         evaFugaEquipoFinished = true;
+
+                        //Guardando en base de datos
+                        adapter.open();
+                        //eliminando elementos que existe (esto es por actualizacion de datos)
+                        int del=adapter.deleteTempMed(3);
+                        Log.e("Evaluacion 3","se han eliminado "+del+" registros.");
+                        //adapter.insertNewTempMed(idSegElecMeasure,2,9,comprobacionConector,1,null,"=");
+                        if(idClase==1){ //clase I
+                            if(tipo_fuga_equipo == 0){//tipo de medicion (0 - alternativo, 1-directo o diferencial)
+                                Log.e("Evaluacion 3","Tipo I, medicion alternativa.");
+                                adapter.insertNewTempMed(idSegElecMeasure,3,15,eva_fuga_equipo,1000,"uA","<=");
+                            }
+                            else if(tipo_fuga_equipo == 1){
+                                Log.e("Evaluacion 3","Tipo I, medicion directa.");
+                                adapter.insertNewTempMed(idSegElecMeasure,3,15,eva_fuga_equipo,500,"uA","<=");
+                            }
+                        }
+                        else if(idClase==2){ //clase II
+                            if(tipo_fuga_equipo == 0){//tipo de medicion (0 - alternativo, 1-directo o diferencial)
+                                Log.e("Evaluacion 3","Tipo II, medicion alternativa.");
+                                adapter.insertNewTempMed(idSegElecMeasure,3,16,eva_fuga_equipo,500,"uA","<=");
+                            }
+                            else if(tipo_fuga_equipo == 1){
+                                Log.e("Evaluacion 3","Tipo II, medicion directa.");
+                                adapter.insertNewTempMed(idSegElecMeasure,3,16,eva_fuga_equipo,100,"uA","<=");
+                            }
+                        }
+                        adapter.close();
+
                         //cambia el icono del menu
                         img.setImageResource(R.drawable.segelec_3_ok);
                         //cierra ventana
@@ -490,7 +580,7 @@ public class SeguridadElectrica {
 
 
     //4: Pop-up: Corriente de fuga del paciente
-    public void corrienteFugaPaciente(final Context context, int idMedicion, int idClase, int idTipo, final ImageView img){
+    public void corrienteFugaPaciente(final Context context, int idMedicion, int idClase, final int idTipo, final ImageView img){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.pop_up_corriente_fuga_paciente,null);
@@ -547,6 +637,39 @@ public class SeguridadElectrica {
                         tipo_fuga_paciente = rg_1.getCheckedRadioButtonId() == R.id.radio_met_alternativo ? 0 : 1; //0 - alternativo, 1-directo o diferencial
                         //variable bandera para precargar datos si ya han sido ingresados
                         evaFugaPacienteFinished = true;
+
+
+                        //Guardando en base de datos
+                        adapter.open();
+                        //eliminando elementos que existe (esto es por actualizacion de datos)
+                        int del=adapter.deleteTempMed(4);
+                        Log.e("Evaluacion 4","se han eliminado "+del+" registros.");
+                        switch (idTipo){
+                            case 2: //tipo BF
+                                //0 - alternativo, 1-directo o diferencial
+                                if(tipo_fuga_paciente == 0){
+                                    Log.e("Evaluacion 4","medicion alternativa.");
+                                    adapter.insertNewTempMed(idSegElecMeasure,4,17,eva_fuga_paciente,5000,"uA","<=");
+                                }
+                                else if(tipo_fuga_paciente == 1){
+                                    Log.e("Evaluacion 4","medicion directa.");
+                                    adapter.insertNewTempMed(idSegElecMeasure,4,17,eva_fuga_paciente,5000,"uA","<=");
+                                }
+                                break;
+                            case 3: //tipo CF
+                                //0 - alternativo, 1-directo o diferencial
+                                if(tipo_fuga_paciente == 0){
+                                    Log.e("Evaluacion 4","medicion alternativa.");
+                                    adapter.insertNewTempMed(idSegElecMeasure,4,17,eva_fuga_paciente,50,"uA","<=");
+                                }
+                                else if(tipo_fuga_paciente == 1){
+                                    Log.e("Evaluacion 4","medicion directa.");
+                                    adapter.insertNewTempMed(idSegElecMeasure,4,17,eva_fuga_paciente,50,"uA","<=");
+                                }
+                                break;
+                        }
+                        adapter.close();
+
                         //cambia el icono del menu
                         img.setImageResource(R.drawable.segelec_3_ok);
                         //cierra ventana
@@ -627,6 +750,15 @@ public class SeguridadElectrica {
                         eva_res_1 = Float.parseFloat(txt_dato.getText().toString());
                         //variable bandera para precargar datos si ya han sido ingresados
                         evaRes1Finished = true;
+
+                        //Guardando en base de datos
+                        adapter.open();
+                        //eliminando elementos que existe (esto es por actualizacion de datos)
+                        int del=adapter.deleteTempMed(5);
+                        Log.e("Evaluacion 5","se han eliminado "+del+" registros.");
+                        adapter.insertNewTempMed(idSegElecMeasure,5,18,eva_res_1,2,"MΩ",">=");
+                        adapter.close();
+
                         //cambia el icono del menu
                         img.setImageResource(R.drawable.seg_elec_2_ok);
                         //cierra ventana
@@ -704,6 +836,15 @@ public class SeguridadElectrica {
                         eva_res_2 = Float.parseFloat(txt_dato.getText().toString());
                         //variable bandera para precargar datos si ya han sido ingresados
                         evaRes2Finished = true;
+
+                        //Guardando en base de datos
+                        adapter.open();
+                        //eliminando elementos que existe (esto es por actualizacion de datos)
+                        int del=adapter.deleteTempMed(6);
+                        Log.e("Evaluacion 6","se han eliminado "+del+" registros.");
+                        adapter.insertNewTempMed(idSegElecMeasure,6,19,eva_res_2,7,"MΩ",">=");
+                        adapter.close();
+
                         //cambia el icono del menu
                         img.setImageResource(R.drawable.seg_elec_2_ok);
                         //cierra ventana
@@ -772,6 +913,15 @@ public class SeguridadElectrica {
                         eva_res_3 = Float.parseFloat(txt_dato.getText().toString());
                         //variable bandera para precargar datos si ya han sido ingresados
                         evaRes3Finished = true;
+
+                        //Guardando en base de datos
+                        adapter.open();
+                        //eliminando elementos que existe (esto es por actualizacion de datos)
+                        int del=adapter.deleteTempMed(7);
+                        Log.e("Evaluacion 7","se han eliminado "+del+" registros.");
+                        adapter.insertNewTempMed(idSegElecMeasure,7,20,eva_res_3,70,"MΩ",">=");
+                        adapter.close();
+
                         //cambia el icono del menu
                         img.setImageResource(R.drawable.seg_elec_2_ok);
                         //cierra ventana
@@ -849,6 +999,15 @@ public class SeguridadElectrica {
                         eva_res_4 = Float.parseFloat(txt_dato.getText().toString());
                         //variable bandera para precargar datos si ya han sido ingresados
                         evaRes4Finished = true;
+
+                        //Guardando en base de datos
+                        adapter.open();
+                        //eliminando elementos que existe (esto es por actualizacion de datos)
+                        int del=adapter.deleteTempMed(8);
+                        Log.e("Evaluacion 8","se han eliminado "+del+" registros.");
+                        adapter.insertNewTempMed(idSegElecMeasure,8,21,eva_res_4,70,"MΩ",">=");
+                        adapter.close();
+
                         //cambia el icono del menu
                         img.setImageResource(R.drawable.seg_elec_2_ok);
                         //cierra ventana
@@ -871,7 +1030,7 @@ public class SeguridadElectrica {
 
 
     //9: Medición de la resistencia del aislamiento entre tensión de alimentación y partes aplicadas
-    public void resistencia5(final Context context, int idMedicion, int idClase, int idTipo, final ImageView img){
+    public void resistencia5(final Context context, int idMedicion, final int idClase, final int idTipo, final ImageView img){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.pop_up_resistencia_1,null);
@@ -926,6 +1085,25 @@ public class SeguridadElectrica {
                         eva_res_5 = Float.parseFloat(txt_dato.getText().toString());
                         //variable bandera para precargar datos si ya han sido ingresados
                         evaRes5Finished = true;
+
+                        //Guardando en base de datos
+                        adapter.open();
+                        //eliminando elementos que existe (esto es por actualizacion de datos)
+                        int del=adapter.deleteTempMed(9);
+                        Log.e("Evaluacion 9","se han eliminado "+del+" registros.");
+                        if(idTipo==1){
+                            if(idClase == 1){
+                                adapter.insertNewTempMed(idSegElecMeasure,9,22,eva_res_5,2,"MΩ",">=");
+                            }
+                            else if(idClase == 2){
+                                adapter.insertNewTempMed(idSegElecMeasure,9,22,eva_res_5,7,"MΩ",">=");
+                            }
+                        }
+                        else if(idTipo==2 || idTipo ==3){
+                            adapter.insertNewTempMed(idSegElecMeasure,9,22,eva_res_5,70,"MΩ",">=");
+                        }
+                        adapter.close();
+
                         //cambia el icono del menu
                         img.setImageResource(R.drawable.seg_elec_2_ok);
                         //cierra ventana

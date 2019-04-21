@@ -22,6 +22,9 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+
+import Objetos.NuevaMedicionSegElec;
 import Objetos.SeguridadElectrica;
 import Objetos.Usuario;
 import database.Adapter;
@@ -73,10 +76,8 @@ public class FragmentClase1Tipo1 extends Fragment {
         readBundle(getArguments());
 
         //Base de datos
-        //adapter = new Adapter(getActivity());
-        //adapter.createDatabase();
-
-
+        adapter = new Adapter(getActivity());
+        adapter.createDatabase();
 
         //objetos del fragmento
         //subtitulo
@@ -137,7 +138,7 @@ public class FragmentClase1Tipo1 extends Fragment {
 
 
         //clase que contiene los popups
-        final SeguridadElectrica seguridadElectrica = new SeguridadElectrica();
+        final SeguridadElectrica seguridadElectrica = new SeguridadElectrica(getActivity(),idSegElecMeasure);
 
         //definiendo que evaluaciones se verán
         if(GLobalIdClase==1){ //clase I
@@ -255,7 +256,47 @@ public class FragmentClase1Tipo1 extends Fragment {
             @Override
             public void onClick(View v) {
                 if(seguridadElectrica.checkEva(GLobalIdClase,GLobalIdTipo)){
-                    showMsg(getActivity(), "ok a guardar", 1);
+                    //obteniendo mediciones de la tabla temporal
+                    adapter.open();
+                    ArrayList<NuevaMedicionSegElec> tempData = adapter.getAllTempMed();
+                    adapter.close();
+                    //probando
+
+                    boolean resultado = false;
+                    adapter.open();
+                    for (NuevaMedicionSegElec e : tempData){
+                        resultado = adapter.insertNewSegElec(e);
+                        if(!resultado){ // algo fallo :(
+                            break;
+                        }
+                    }
+                    adapter.close();
+
+                    //notificando resultado de la operacion
+                    if(resultado){
+                        //levantando popup de pregunta
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("¡Ok!");
+                        builder.setMessage("Los datos han sido guardados exitosamente, ¿Desea regresar a la pantalla principal?");
+                        builder.setCancelable(false);
+                        builder.setIcon(R.drawable.ic_warning);
+                        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                        builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                ((Home)getActivity()).openMainMenu();
+                            }
+                        });
+                        AlertDialog alert = builder.create();
+                        alert.show();//showing the dialog
+                    }
+                    else{
+                        showMsg(getActivity(), "Error al intentar guardar en base de datos, el proceso se detuvo.", 2);
+                    }
+
                 }
                 else{
                     showMsg(getActivity(), "Para guardar es necesario haber ingresado todas las mediciones requeridas." +

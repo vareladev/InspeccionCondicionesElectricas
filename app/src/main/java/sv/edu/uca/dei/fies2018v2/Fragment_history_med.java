@@ -7,11 +7,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
 
+import Objetos.Area;
+import Objetos.Hospital;
 import database.Adapter;
 import de.codecrafters.tableview.TableView;
 import de.codecrafters.tableview.listeners.TableDataClickListener;
@@ -31,8 +35,11 @@ public class Fragment_history_med extends Fragment {
     //tableview
     private static final String[] TABLE_HEADERS = { "Hospital", "Área", "Fecha", "En linea" };
     private TableView<String[]> tableView;
-    private SimpleTableDataAdapter tableAdapter;
+    private static SimpleTableDataAdapter tableAdapter;
     private static ArrayList<String[]> measureList;
+    //para spinner
+    private int selectedHospital;
+
 
     public Fragment_history_med() {
         // Required empty public constructor
@@ -47,26 +54,34 @@ public class Fragment_history_med extends Fragment {
 
         //Base de datos
         adapter = new Adapter(getActivity());
+        adapter.createDatabase();
+
+        //para spinner hospital
+        selectedHospital = 1;
 
         //elementos graficos
-        Spinner spinSearchBy = (Spinner) view.findViewById(R.id.spinSearchBy);
+        Spinner spinnerHospital = (Spinner) view.findViewById(R.id.spinSearchBy);
+        tableView = (TableView<String[]>) view.findViewById(R.id.tblHistory);
+        Button btnSetFilter = (Button) view.findViewById(R.id.btnSetFilter);
+
 
         //inicializando spinner para criterios de busqueda
-        ArrayList<String> criteriosDeBusqueda = new  ArrayList<String>();
-        criteriosDeBusqueda.add("Hospital San Rafael");
-        criteriosDeBusqueda.add("Hospital de la Mujer");
-        criteriosDeBusqueda.add("Hospital Bloom");
-        ArrayAdapter<String> SearchByAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, criteriosDeBusqueda);
-        spinSearchBy.setAdapter(SearchByAdapter);
+        adapter.open();
+        ArrayList<Hospital> hospitalList = adapter.getHospitals();
+        adapter.close();
+        ArrayAdapter<Hospital> spinHosAdapter = new ArrayAdapter<Hospital>(getActivity(), android.R.layout.simple_spinner_dropdown_item, hospitalList);
+        spinnerHospital.setAdapter(spinHosAdapter);
+
 
         //Inicializacion de la tabla
-        tableView = (TableView<String[]>) view.findViewById(R.id.tblHistory);
         //cargar header
         tableView.setHeaderAdapter(new SimpleTableHeaderAdapter(getActivity(), TABLE_HEADERS));
         //cargar datos
         adapter.open();
+        //por el momento todas las mediciones
         measureList  = adapter.getMeasuresList();
         adapter.close();
+
         tableAdapter = new SimpleTableDataAdapter(getActivity(), measureList);
         tableView.setDataAdapter(tableAdapter);
         //personalizacion de la tabla:
@@ -84,6 +99,45 @@ public class Fragment_history_med extends Fragment {
         //cargar funcionalidad de click
         tableView.addDataClickListener(new tblClickListener());
 
+        //Listener hospital
+        spinnerHospital.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Hospital hospital = (Hospital) parent.getSelectedItem();
+                selectedHospital = Integer.parseInt(hospital.getId());
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+
+        btnSetFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(selectedHospital == 1){
+                    adapter.open();
+                    ArrayList<String[]> NewMeasureList = adapter.getMeasuresList();
+                    adapter.close();
+                    measureList.clear();
+                    for(String s[]: NewMeasureList){
+                        measureList.add(s);
+                    }
+                    tableAdapter.notifyDataSetChanged();
+                }
+                else{
+                    adapter.open();
+                    ArrayList<String[]> NewMeasureList = adapter.getMeasuresListById(selectedHospital);
+                    adapter.close();
+                    measureList.clear();
+                    for(String s[]: NewMeasureList){
+                        measureList.add(s);
+                    }
+                    tableAdapter.notifyDataSetChanged();
+
+                }
+            }
+        });
 
         return view;
     }

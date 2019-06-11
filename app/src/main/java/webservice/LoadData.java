@@ -4,11 +4,14 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,10 +29,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 
+import Objetos.Usuario;
 import database.Adapter;
 import sv.edu.uca.dei.fies2018v2.R;
 
@@ -81,8 +88,62 @@ public class LoadData extends AsyncTask<Void, Void, String>{
             return "5";
         }
 
-        String[] tableList = {"equipo","accesorio","mxe", "medicion", "variable", "subvariable"};
-        String[] globalColumnList = {"idEquipoGlobal","idAccesorioGlobal","idMxeGlobal", "idMedicionGlobal", "idVariableGlobal", "idSubVariableGlobal"};
+        //String[] tableList = {"equipo","accesorio","mxe", "medicion", "variable", "subvariable"};
+        //String[] globalColumnList = {"idEquipoGlobal","idAccesorioGlobal","idMxeGlobal", "idMedicionGlobal", "idVariableGlobal", "idSubVariableGlobal"};
+
+        /*String[] tableList = {"equipo",
+                "accesorio",
+                "mxe",
+                "medicion",
+                "variable",
+                "subvariable",
+                "equipoAnalizado",
+                "medicionelec",
+                "segelectrica",
+                "sxe"};
+        String[] globalColumnList = {"idEquipoGlobal",
+                "idAccesorioGlobal",
+                "idMxeGlobal",
+                "idMedicionGlobal",
+                "idVariableGlobal",
+                "idSubVariableGlobal",
+                "idEquipoAnalizadoGlobal",
+                "medicionElecGlobal",
+                "idSegElectricaGlobal",
+                "idsxeGlobal"};
+        */
+
+        String[] tableList = {
+                "equipo",
+                "accesorio",
+                "medicion",
+                "variable",
+                "subvariable",
+                "mxe",
+                "equipoAnalizado",
+                "segelectrica",
+                "medicionelec",
+                "sxe",
+        };
+        String[] globalColumnList = {
+                "idEquipoGlobal",
+                "idAccesorioGlobal",
+                "idMedicionGlobal",
+                "idVariableGlobal",
+                "idSubVariableGlobal",
+                "idMxeGlobal",
+                "idEquipoAnalizadoGlobal",
+                "idSegElectricaGlobal",
+                "medicionElecGlobal",
+                "idsxeGlobal"
+        };
+
+
+        //si son las tablas variable o subvariable se debe verificar si hay global que asignar antes de subir
+        adapter.open();
+        adapter.check_global_id_variable();
+        adapter.check_global_id_subvariable();
+        adapter.close();
 
         int JSONNULLCont = 0;
         for (int i = 0; i<tableList.length ;i++){
@@ -90,13 +151,14 @@ public class LoadData extends AsyncTask<Void, Void, String>{
             HttpURLConnection httpCon = getHttpCon();
 
             if(httpCon != null){
+
                 //obteniendo tabla en json
                 adapter.open();
                 String json = adapter.tableToJSON(tableList[i], globalColumnList[i]);
                 adapter.close();
 
                 if(json != null){
-                    Log.d(TAG+", json: ", json);
+                    Log.e(TAG+", json: ", json);
                     //asignando datos al hashmap
                     HashMap<String, String> postDataParams = new HashMap<>();
                     postDataParams.put("tabla", tableList[i]);
@@ -113,7 +175,7 @@ public class LoadData extends AsyncTask<Void, Void, String>{
                     if(connectionRes){
                         //recibiendo respuesta de webservice
                         String serverResponse = HttpRead(httpCon);
-                        Log.d(TAG+", server: ", serverResponse);
+                        Log.e(TAG+", server: ", serverResponse);
                         if (serverResponse != null)
                             udpateDataBase(serverResponse);
                     }else{
@@ -131,7 +193,7 @@ public class LoadData extends AsyncTask<Void, Void, String>{
             //cerrando conexion
             closeHttpCon(httpCon);
         }
-        if(JSONNULLCont==6)
+        if(JSONNULLCont==10) //10 es porque se actualizan 10 tablas
             return "2";
         else
             return null;
@@ -167,6 +229,7 @@ public class LoadData extends AsyncTask<Void, Void, String>{
         pDialog.dismiss();
     }
 
+
     private String HttpRead(HttpURLConnection httpCon){
         String response = null;
         InputStream inputStream = null;
@@ -183,7 +246,7 @@ public class LoadData extends AsyncTask<Void, Void, String>{
                 bufferedReader.close();
             }
         } catch (IOException e) {
-            Log.w(TAG+": read", e.toString());
+            Log.e(TAG+": read", e.toString());
         }
         return response;
     }
@@ -204,7 +267,7 @@ public class LoadData extends AsyncTask<Void, Void, String>{
             return true;
         }
         catch (IOException e) {
-            Log.w(TAG+": write", e.toString());
+            Log.e(TAG+": write", e.toString());
             return false;
         }
     }
@@ -218,7 +281,7 @@ public class LoadData extends AsyncTask<Void, Void, String>{
             httpCon.setDoInput(true);
             httpCon.setDoOutput(true);
         } catch (IOException e) {
-            Log.w(TAG+" getCon", e.toString());
+            Log.e(TAG+" getCon", e.toString());
         }
         return httpCon;
     }
@@ -282,12 +345,65 @@ public class LoadData extends AsyncTask<Void, Void, String>{
                         idColumn = "idSubVariable";
                         idGlobalColumn = "idSubVariableGlobal";
                     }
+                    else if (tableName.equals("equipoAnalizado")){
+                        idColumn = "idEquipoAnalizado";
+                        idGlobalColumn = "idEquipoAnalizadoGlobal";
+                    }
+                    else if (tableName.equals("medicionelec")){
+                        idColumn = "id";
+                        idGlobalColumn = "medicionElecGlobal";
+                    }
+                    else if (tableName.equals("segelectrica")){
+                        idColumn = "idSegElectrica";
+                        idGlobalColumn = "idSegElectricaGlobal";
+                    }
+                    else if (tableName.equals("sxe")){
+                        idColumn = "idsxe";
+                        idGlobalColumn = "idsxeGlobal";
+                    }
+
 
                     adapter.open();
                     // public boolean updateGlobalId(String tabla, String idColumnName, String idValue, String globalColumnName, String globalValue) {
                     adapter.updateGlobalId(tableName, idColumn, idData, idGlobalColumn, idGlobalData);
                     adapter.close();
-                    //Log.w(TAG+" update", "UPDATE "+tableName+" SET "+idGlobalColumn+" = "+idGlobalData+" WHERE "+idColumn+" = "+idData);
+
+                    //actualizando dependencias de tabla medicion (para webservice: tablas variable y mxe)
+                    /*
+                    dependencias
+                        medicion > variable
+                        medicion > mxe
+                        variable > subvariable
+                        equipo > accesorio
+                        equipoAnalizado > segelectrica
+                        segelectrica > medicionelec
+                        segelectrica > sxe
+                    */
+                    adapter.open();
+                    if (tableName.equals("medicion")){
+                        adapter.update_global_dependencies("variable","idMedicion", idData, "idMedicionGlobal", idGlobalData);
+                        adapter.update_global_dependencies("mxe","idMedicion", idData, "idMedicionGlobal", idGlobalData);
+                    }
+                    //actualizando dependencias de tabla variable (para webservice: tabla subvariable)
+                    if (tableName.equals("variable")){
+                        adapter.update_global_dependencies("subvariable","idVariable", idData, "idVariableGlobal", idGlobalData);
+                    }
+                    //actualizando dependencias de tabla equipo (para webservice: tabla accesorio)
+                    if (tableName.equals("equipo")){
+                        adapter.update_global_dependencies("accesorio","idEquipo", idData, "idEquipoGlobal", idGlobalData);
+                    }
+                    //actualizando dependencias de tabla equipoAnalizado (para webservice: tabla segelectrica)
+                    if (tableName.equals("equipoAnalizado")){
+                        adapter.update_global_dependencies("segelectrica","idEquipoAnalizado", idData, "idEquipoAnalizadoGlobal", idGlobalData);
+                    }
+                    //actualizando dependencias de tabla segelectrica  (para webservice: tabla medicionelec y sxe)
+                    if (tableName.equals("segelectrica")){
+                        adapter.update_global_dependencies("medicionelec","id_segelectrica", idData, "idSegElectricaGlobal", idGlobalData);
+                        adapter.update_global_dependencies("sxe","idSegElectrica", idData, "idSegElectricaGlobal", idGlobalData);
+                    }
+                    adapter.close();
+
+                    Log.e(TAG+" update", "UPDATE "+tableName+" SET "+idGlobalColumn+" = "+idGlobalData+" WHERE "+idColumn+" = "+idData);
                 }
             } catch (JSONException e) {
                 Log.w(TAG + "udpateDataBase", e.toString());

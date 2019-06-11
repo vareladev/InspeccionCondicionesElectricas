@@ -88,9 +88,6 @@ public class FragmenMenu extends Fragment {
         LinearLayout Menu_boton4 = (LinearLayout) view.findViewById(R.id.Menu_boton4); //sincronizar
         LinearLayout Menu_boton5 = (LinearLayout) view.findViewById(R.id.Menu_boton5); //exportar
 
-
-
-
         btnEquipo2.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -367,6 +364,7 @@ public class FragmenMenu extends Fragment {
                 tableList.add("equipoAnalizado");
                 tableList.add("segelectrica");
                 tableList.add("medicionelec");
+                tableList.add("sxe");
 
                 sqliteToExcel = new SQLiteToExcel(getActivity(), "fies2018.db",downloadDir.toString()+"/");
                 sqliteToExcel.exportSpecificTables(tableList, txt_get_filename.getText().toString()+

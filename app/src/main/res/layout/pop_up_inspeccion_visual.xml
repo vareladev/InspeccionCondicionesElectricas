@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <TextView
         android:id="@+id/chk_med_title"
@@ -32,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="10dp"
-                android:text="Condiciones del chasis (presencia de quiebres, rajaduras, daños):"
+                android:text="Condiciones del chasis:"
                 android:paddingLeft="20dp"
                 android:textSize="20sp"
                 android:gravity="left|center"/>
@@ -93,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="10dp"
-                android:text="Los fusibles accesibles desde el exterior son acorde a lo que establece el fabricante (corriente nominal, características):"
+                android:text="Fusibles accesibles desde el exterior son acorde a lo que establece el fabricante:"
                 android:paddingLeft="20dp"
                 android:textSize="20sp"
                 android:gravity="left|center"/>
@@ -150,7 +152,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="10dp"
-                android:text="Los símbolos de seguridad y las etiquetas son legibles y están completos:"
+                android:text="Símbolos de seguridad y las etiquetas son legibles y están completos:"
                 android:paddingLeft="20dp"
                 android:textSize="20sp"
                 android:gravity="left|center"/>
@@ -207,7 +209,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="10dp"
-                android:text="Integridad de las partes mecánicas (por ejemplo: obstrucción de partes móviles):"
+                android:text="Integridad de las partes mecánicas:"
                 android:paddingLeft="20dp"
                 android:textSize="20sp"
                 android:gravity="left|center"/>
@@ -322,7 +324,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="10dp"
-                android:text="Evaluación de los accesorios relevantes al equipo biomédico (por ejemplo: cables/circuito de paciente, cables de poder, transductores, etc):"
+                android:text="Evaluación de los accesorios relevantes al equipo biomédico:"
                 android:paddingLeft="20dp"
                 android:textSize="20sp"
                 android:gravity="left|center"/>
@@ -436,7 +438,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="10dp"
-                android:text="Documentación actualizada del equipo biomédico:"
+                android:text="Documentación actualizada:"
                 android:paddingLeft="20dp"
                 android:textSize="20sp"
                 android:gravity="left|center"/>
@@ -470,6 +472,8 @@
             </LinearLayout>
         </LinearLayout>
 
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -484,7 +488,53 @@
         </LinearLayout>
 
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="20dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:text="Comentarios:"
+                android:paddingLeft="20dp"
+                android:textSize="20sp"
+                android:gravity="left|center"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp">
 
+                <EditText
+                    android:id="@+id/et_get_comment"
+                    android:gravity="top|left"
+                    android:inputType="textMultiLine"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:lines="2"
+                    android:scrollHorizontally="false"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:paddingLeft="10dp"
+                android:background="@android:color/darker_gray" />
+        </LinearLayout>
 
 
         <LinearLayout

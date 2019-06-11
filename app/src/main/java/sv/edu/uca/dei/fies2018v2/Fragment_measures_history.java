@@ -82,6 +82,8 @@ public class Fragment_measures_history extends Fragment {
         LinearLayout detNoiseData = (LinearLayout) view.findViewById(R.id.detNoiseData);
         LinearLayout detLuxData = (LinearLayout) view.findViewById(R.id.detLuxData);
         LinearLayout detElecData = (LinearLayout) view.findViewById(R.id.detElecData);
+        //boton actualizar inspeccion
+        Button btn_update_insp = (Button) view.findViewById(R.id.btn_update_insp);
 
 
         //asignando datos
@@ -124,6 +126,30 @@ public class Fragment_measures_history extends Fragment {
                 dialogGetComment(idMedicion);
             }
         });
+
+        btn_update_insp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("¡Ok!");
+                builder.setMessage("Los datos han sido actualizados exitosamente, ¿Desea regresar a la pantalla principal?");
+                builder.setCancelable(false);
+                builder.setIcon(R.drawable.ic_warning);
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+                builder.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        ((Home)getActivity()).openMainMenu();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();//showing the dialog
+            }
+        });
+
         return view;
     }
 
@@ -196,7 +222,8 @@ public class Fragment_measures_history extends Fragment {
         final EditText mTxtVFaseNeutro = (EditText)dialogView.findViewById(R.id.txtVFaseNeutro);
         final EditText mTxtVNeutroTierra = (EditText)dialogView.findViewById(R.id.txtVNeutroTierra);
         final EditText mTxtVFaseTierra = (EditText)dialogView.findViewById(R.id.txtVFaseTierra);
-
+        //comentario
+        final EditText et_get_comment = (EditText)dialogView.findViewById(R.id.et_get_comment);
 
         adapter.open();
         mTxtvTitleMedElec.setText("Recéptaculo R"+(adapter.countReceptacles(idMedicion)+1));
@@ -217,7 +244,7 @@ public class Fragment_measures_history extends Fragment {
                 if(checkEditTextIsEmpty(mTxtVFaseNeutro,mTxtVNeutroTierra,mTxtVFaseTierra )){
                     adapter.open();
                     //insertando la variable
-                    if(adapter.newVariable(idMedicion,0, 1,0)){
+                    if(adapter.newVariable(idMedicion,0, 1,0, null)){
                         //al ser med electrica se llena la tabla subvariable
                         int idVariable = adapter.getLastId("variable");
                         //float polaridad = Float.parseFloat(mTxtPolaridad.getText().toString());
@@ -227,7 +254,14 @@ public class Fragment_measures_history extends Fragment {
                         float vfaseneutro = Float.parseFloat(mTxtVFaseNeutro.getText().toString());
                         float vneutrotierra = Float.parseFloat(mTxtVNeutroTierra.getText().toString());
                         float vfasetierra = Float.parseFloat(mTxtVFaseTierra.getText().toString());
-                        if(adapter.newSubVariable(idVariable,polaridad,vfaseneutro,vneutrotierra,vfasetierra)){
+
+                        //verificando comentario
+                        String comentario = null;
+                        if(checkEditTextIsEmpty(et_get_comment)){
+                            comentario = et_get_comment.getText().toString();
+                        }
+
+                        if(adapter.newSubVariable(idVariable,polaridad,vfaseneutro,vneutrotierra,vfasetierra, comentario)){
                             String cadPolaridad = polaridad == 1 ? "Si" : "No";
                             String[] subVariableRow = {adapter.countReceptacles(idMedicion)+"", cadPolaridad, vfaseneutro+"", vneutrotierra+"", vfasetierra+""};
                             listReceptaclesId.add(subVariableRow);
@@ -341,6 +375,8 @@ public class Fragment_measures_history extends Fragment {
         Button btnCancelMed = (Button)dialogView.findViewById(R.id.btnCancelMed);
         Button btnGetMed = (Button)dialogView.findViewById(R.id.btnGetMed);
         final EditText txt_med_dato = (EditText)dialogView.findViewById(R.id.txt_med_dato);
+        //comentario
+        final EditText et_get_comment = (EditText)dialogView.findViewById(R.id.et_get_comment);
 
         //titulo
         add_med_title.setText(subtitle);
@@ -381,7 +417,14 @@ public class Fragment_measures_history extends Fragment {
                             break;
                     }
 
-                    if(adapter.newVariable(ParamIdMed, EnviCond, Paramtipo,isok)){
+                    //verificando comentario en variables
+                    String comentario = null;
+                    //verificando comentario
+                    if(checkEditTextIsEmpty(et_get_comment)){
+                        comentario = et_get_comment.getText().toString();
+                    }
+
+                    if(adapter.newVariable(ParamIdMed, EnviCond, Paramtipo,isok, comentario)){
                         int lastRegId = 1;
                         if(listConditions.size() > 0){
                             lastRegId = Integer.parseInt(listConditions.get(listConditions.size()-1)[0]) + 1;

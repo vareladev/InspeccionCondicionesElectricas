@@ -20,7 +20,10 @@ import android.widget.Spinner;
 
 import com.google.gson.Gson;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import Objetos.Area;
 import Objetos.Clase;
@@ -174,10 +177,23 @@ public class Fragment_Seg_Elec_1 extends Fragment {
                         //si se pudo insertar el registro de nueva medicion
                         int lastIdEquip = adapter.getLastId("equipoAnalizado");
                         //Log.e("agregando","ultimo ID de equipo:"+lastIdEquip);
+                        //obteniendo fecha de creacion
+                        Calendar rightNow = Calendar.getInstance();
+                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                        String date = df.format(rightNow.getTime());
+                        //obteniedo hora
+                        int hour24format = rightNow.get(Calendar.HOUR_OF_DAY);
+                        int minutes = rightNow.get(Calendar.MINUTE);
+                        int segundos = rightNow.get(Calendar.SECOND);
+                        String hora = hour24format+":"+minutes+":"+segundos;
+
                         boolean result2 = adapter.insertNewElecSec(idHospital,
                                             txt_servicio.getText().toString(),
                                             txt_responsable.getText().toString(),
-                                            lastIdEquip);
+                                            lastIdEquip,
+                                            currentUser.getId(),
+                                            date,
+                                            hora);
                         if(result2){
                             boolean result3=false;
                             //ultimo paso registrar el equipo utilizado por la medicion

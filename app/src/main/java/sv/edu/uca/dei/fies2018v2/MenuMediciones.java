@@ -25,7 +25,10 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import database.Adapter;
@@ -37,6 +40,7 @@ import Objetos.*;
 public class MenuMediciones extends Fragment {
     //Database adapter
     private Adapter adapter;
+
 
     //++++++++++++++++++++++++++++++++++
     static ArrayList<String> idEquipList = new ArrayList<>();
@@ -177,7 +181,18 @@ public class MenuMediciones extends Fragment {
             public void onClick(View v) {
                 boolean res = true;
                 String idArea = ((Area) mSpinAreas.getSelectedItem()).getId();
-                NuevaMedicion nuevaMedicion = new NuevaMedicion(currentUser.getId(), idArea, mTxtNewMedServicio.getText().toString(), mTxtNewMedResp.getText().toString(), "0000-0000");
+
+                //obteniendo fecha de creacion
+                Calendar rightNow = Calendar.getInstance();
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                String date = df.format(rightNow.getTime());
+                //obteniedo hora
+                int hour24format = rightNow.get(Calendar.HOUR_OF_DAY);
+                int minutes = rightNow.get(Calendar.MINUTE);
+                int segundos = rightNow.get(Calendar.SECOND);
+                String hora = hour24format+":"+minutes+":"+segundos;
+
+                NuevaMedicion nuevaMedicion = new NuevaMedicion(currentUser.getId()+"", idArea, mTxtNewMedServicio.getText().toString(), mTxtNewMedResp.getText().toString(), "0000-0000", date, hora);
                 //equipList2
                 //haciendo insert de nueva medicion
                 adapter.open();

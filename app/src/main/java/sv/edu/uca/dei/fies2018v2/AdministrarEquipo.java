@@ -203,9 +203,9 @@ public class AdministrarEquipo extends Fragment {
                 //Toast.makeText(getActivity(), "Agregar nuevo equipo", Toast.LENGTH_SHORT).show();
                 if(checkEditTextIsEmpty(mTxtNombre,mTxtMarca, mTxtModelo)){
                     //Toast.makeText(getActivity(), "Agregar nuevo equipo", Toast.LENGTH_SHORT).show();
-                    int correlativo = 0;
+                    String correlativo = "";
                     if(!TextUtils.isEmpty(mTxtCorrelInv.getText()))
-                        correlativo = Integer.parseInt(mTxtCorrelInv.getText().toString());
+                        correlativo = mTxtCorrelInv.getText().toString();
 
                     adapter.open();
                     if(adapter.newEquip(mTxtNombre.getText().toString(),mTxtMarca.getText().toString(),mTxtModelo.getText().toString(),mTxtSerie.getText().toString(),

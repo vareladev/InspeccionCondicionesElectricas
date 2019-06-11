@@ -11,6 +11,7 @@ public class NuevaMedicion {
     private String responsable;
     private String telefono;
     private String fecha;
+    private String hora;
 
     public NuevaMedicion(String idUsuario, String idArea, String servicioAnalizado, String responsable, String telefono) {
         this.idUsuario = idUsuario;
@@ -27,6 +28,20 @@ public class NuevaMedicion {
         this.responsable = responsable;
         this.telefono = telefono;
         this.fecha = fecha;
+    }
+
+    public NuevaMedicion(String idUsuario, String idArea, String servicioAnalizado, String responsable, String telefono, String fecha, String hora) {
+        this.idUsuario = idUsuario;
+        this.idArea = idArea;
+        this.servicioAnalizado = servicioAnalizado;
+        this.responsable = responsable;
+        this.telefono = telefono;
+        this.fecha = fecha;
+        this.hora = hora;
+    }
+
+    public String getHora() {
+        return hora;
     }
 
     public String getFecha() {

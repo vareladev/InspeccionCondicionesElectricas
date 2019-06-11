@@ -12,12 +12,13 @@ public class NuevaMedicionSegElec {
     private float estandar;
     private String magnitud;
     private String comentario;
+    private String valoracion;
 
     //constructor
     public NuevaMedicionSegElec() {
     }
     //constructor
-    public NuevaMedicionSegElec(int id_segelectrica, int id_bloque, int id_pregunta, float medicion, float estandar, String magnitud, String comentario) {
+    public NuevaMedicionSegElec(int id_segelectrica, int id_bloque, int id_pregunta, float medicion, float estandar, String magnitud, String comentario, String valoracion) {
         this.id_segelectrica = id_segelectrica;
         this.id_bloque = id_bloque;
         this.id_pregunta = id_pregunta;
@@ -25,6 +26,7 @@ public class NuevaMedicionSegElec {
         this.estandar = estandar;
         this.magnitud = magnitud;
         this.comentario = comentario;
+        this.valoracion = valoracion;
     }
 
     public int getId_segelectrica() {
@@ -55,6 +57,10 @@ public class NuevaMedicionSegElec {
         return comentario;
     }
 
+    public String getValoracion() {
+        return valoracion;
+    }
+
     @Override
     public String toString() {
         return "NuevaMedicionSegElec{" +
@@ -65,6 +71,7 @@ public class NuevaMedicionSegElec {
                 ", estandar=" + estandar +
                 ", magnitud='" + magnitud + '\'' +
                 ", comentario='" + comentario + '\'' +
+                ", valoracion='" + valoracion + '\'' +
                 '}';
     }
 }

@@ -4,6 +4,7 @@ package database;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -75,13 +76,19 @@ public class Adapter {
 
     //CONSULTAS A BASE DE DATOS
     //SQL login
-    public Usuario checkUser(String dui, String pass) {
-        String sql ="select idUsuario, dui, nombre from usuario where dui = '"+dui+"' and pass ='"+pass+"';";
+    public Usuario checkUser(String nick, String pass) {
+        String sql ="SELECT idUsuario, nick, nombre, correo, idUniversidad from usuario WHERE nick = '"+nick+"' AND pass = '"+pass+"';";
         Usuario usuario = null;
         try{
             Cursor c = mDb.rawQuery(sql, null);
             if(c.moveToFirst()){
-                usuario = new Usuario(c.getInt(0)+"",c.getString(1),c.getString(2));
+                usuario = new Usuario(
+                        c.getInt(0),
+                        c.getString(1),
+                        c.getString(2),
+                        c.getString(3),
+                        c.getInt(4)
+                );
             }
         }
         catch (SQLException mSQLException){
@@ -132,7 +139,7 @@ public class Adapter {
     }
 
     //Insertar registro de equipo
-    public boolean newEquip(String nombre,String marca, String modelo, String serie, String fecha, int correlInventario){
+    public boolean newEquip(String nombre,String marca, String modelo, String serie, String fecha, String correlInventario){
         boolean result = false;
         ContentValues values = new ContentValues();
         //String sql = "insert into equipo (codigoActivo, ubicacion, nota) VALUES ('"+codigoActivo+"', '"+ubicacion+"', '"+nota+"');";
@@ -454,6 +461,8 @@ public class Adapter {
             values.put("telefono", nuevaMedicion.getTelefono());
             values.put("idArea", nuevaMedicion.getIdArea());
             values.put("idUsuario", nuevaMedicion.getIdUsuario());
+            values.put("fecha2", nuevaMedicion.getFecha());
+            values.put("hora", nuevaMedicion.getHora());
             mDb.insert("medicion", null, values);
             result = true;
         }
@@ -537,7 +546,7 @@ public class Adapter {
     //*************************************************************************
     // CONSULTAS TABLA VARIABLE
     //crear nuevo registro
-    public boolean newVariable(int idMedicion, float valor ,int tipo, int isok){
+    public boolean newVariable(int idMedicion, float valor ,int tipo, int isok, String comentario){
         boolean result = false;
         ContentValues values = new ContentValues();
         try{
@@ -547,6 +556,7 @@ public class Adapter {
                 values.put("cumple", isok);
             }
             values.put("tipo", tipo);
+            values.put("comentario", comentario);
             mDb.insert("variable", null, values);
             result = true;
             Log.v("Adapter>newVariable >>", "Registro de variable Exitoso!!");
@@ -643,7 +653,7 @@ public class Adapter {
     //*************************************************************************
     // CONSULTAS TABLA SUBVARIABLE
     //crear nuevo registro
-    public boolean newSubVariable(int idVariable, float polaridad, float vfaseneutro ,float vneutrotierra, float vfasetierra){
+    public boolean newSubVariable(int idVariable, float polaridad, float vfaseneutro ,float vneutrotierra, float vfasetierra, String comentario){
         boolean result = false;
         ContentValues values = new ContentValues();
         try{
@@ -652,6 +662,7 @@ public class Adapter {
             values.put("vfaseneutro", vfaseneutro);
             values.put("vneutrotierra", vneutrotierra);
             values.put("vfasetierra", vfasetierra);
+            values.put("comentario", comentario);
             mDb.insert("subvariable", null, values);
             result = true;
             Log.v("Adptr>newSubVariable:", "Registro de variable Exitoso!!");
@@ -750,6 +761,38 @@ public class Adapter {
         }
     }
 
+    public ArrayList<String[]> getMeasuresListById(int id){
+        String[] measureRow;
+        ArrayList<String[]> measureList = new ArrayList<String[]>();
+        String sql2 = "select hospital.seudo, area.nombreArea, medicion.fecha, medicion.idMedicion, hospital.idHospital, area.idArea " +
+                "from hospital, area, medicion " +
+                "where hospital.idHospital = area.idHospital and area.idArea = medicion.idArea and hospital.idHospital ="+id+";";
+        Cursor c = null;
+        try{
+            c = mDb.rawQuery(sql2, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR-getMeasuresList"+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                do {
+                    measureRow = new String[7];
+                    measureRow[0] = c.getString(0);
+                    measureRow[1] = c.getString(1);
+                    measureRow[2] = c.getString(2);
+                    measureRow[3] = "No";
+                    measureRow[4] = c.getInt(3)+"";
+                    measureRow[5] = c.getInt(4)+"";
+                    measureRow[6] = c.getInt(5)+"";
+                    measureList.add(measureRow);
+                    Log.e("adapter", Arrays.toString(measureRow));
+                } while (c.moveToNext());
+            }
+            return measureList;
+        }
+    }
+
 
     //*************************************************************************
     // Tabla equipoAnalizado
@@ -775,7 +818,7 @@ public class Adapter {
         return result;
     }
 
-    public boolean insertNewElecSec(int idHospital, String servicio, String responsable, int equipoAnalizado){
+    public boolean insertNewElecSec(int idHospital, String servicio, String responsable, int equipoAnalizado,int idUser, String date, String hora){
         boolean result = false;
         ContentValues values = new ContentValues();
         try{
@@ -783,6 +826,9 @@ public class Adapter {
             values.put("servicioAnalizado", servicio);
             values.put("responsable", responsable);
             values.put("idEquipoAnalizado", equipoAnalizado);
+            values.put("idUsuario", idUser);
+            values.put("fecha2", date);
+            values.put("hora", hora);
             mDb.insert("segelectrica", null, values);
             result = true;
         }
@@ -854,8 +900,9 @@ public class Adapter {
     //*************************************************************************
     // Tabla temp_medicionelec
     //*************************************************************************
+
     //agregando nuevo registro
-    public boolean insertNewTempMed(int id_segelectrica, int id_bloque, int id_pregunta, float medicion, float estandar, String magnitud, String comentario){
+    public boolean insertNewTempMed(int id_segelectrica, int id_bloque, int id_pregunta, float medicion, float estandar, String magnitud, String comentario, String valoracion){
         boolean result = false;
         ContentValues values = new ContentValues();
         try{
@@ -866,6 +913,7 @@ public class Adapter {
             values.put("estandar", estandar);
             values.put("magnitud", magnitud);
             values.put("comentario", comentario);
+            values.put("valoracion", valoracion);
             mDb.insert("temp_medicionelec", null, values);
             result = true;
         }
@@ -901,7 +949,7 @@ public class Adapter {
 
     //obtener todos los datos de la tabla temporal de mediciones de seguridad electrica
     public ArrayList<NuevaMedicionSegElec> getAllTempMed() {
-        String sql ="select id_segelectrica, id_bloque, id_pregunta, medicion,estandar, magnitud, comentario from temp_medicionelec;";
+        String sql ="select id_segelectrica, id_bloque, id_pregunta, medicion,estandar, magnitud, comentario, valoracion from temp_medicionelec;";
         ArrayList<NuevaMedicionSegElec> tempData = null;
         Cursor c = null;
         try{
@@ -922,7 +970,8 @@ public class Adapter {
                             c.getFloat(3),
                             c.getFloat(4),
                             c.getString(5),
-                            c.getString(6)
+                            c.getString(6),
+                            c.getString(7)
                     ));
                 } while (c.moveToNext());
             }
@@ -942,6 +991,7 @@ public class Adapter {
             values.put("estandar", e.getEstandar());
             values.put("magnitud", e.getMagnitud());
             values.put("comentario", e.getComentario());
+            values.put("valoracion", e.getValoracion());
             mDb.insert("medicionelec", null, values);
             result = true;
         }
@@ -950,6 +1000,26 @@ public class Adapter {
         }
         return result;
     }
+
+    //*************************************************************************
+    // CONSULTAS JSON
+    //*************************************************************************
+    //Actualizando comentario
+    public boolean updateComment(int id_segelectrica, String comment){
+        int result = 0;
+        ContentValues args = new ContentValues();
+        try {
+            args.put("comentario", comment);
+            result = mDb.update("segelectrica", args, "idSegElectrica =" + id_segelectrica, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! updateComment>"+ mSQLException.toString());
+        }
+        finally{
+            return result > 0;
+        }
+    }
+
     //*************************************************************************
     // CONSULTAS JSON
     //*************************************************************************
@@ -1040,6 +1110,131 @@ public class Adapter {
             return result > 0;
         }
     }
+
+    public void update_global_dependencies(String tableName,String id, String idValue, String idGlobal, String idGlobalValue){
+        ContentValues valuesToUpdate = new ContentValues();
+        valuesToUpdate.put(idGlobal, idGlobalValue);
+        //actualizando tabla subvariable
+        try {
+            mDb.update(tableName, valuesToUpdate, id + "=" + idValue, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! update_medicion_dependencies>"+ mSQLException.toString());
+        }
+        return;
+    }
+
+    //
+    public void check_global_id_variable(){
+        String sql ="SELECT idVariable, idMedicion FROM variable WHERE idMedicionGlobal IS NULL;";
+        Cursor c = null;
+        String idMedicionGlobal = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! equipoToJson: "+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                do {
+                    idMedicionGlobal = get_global_id_medicion(c.getInt(1));
+                    if(idMedicionGlobal != null){ //hay que intentar actualizar
+                        update_global_id_variable(c.getInt(0), Integer.parseInt(idMedicionGlobal));
+                        idMedicionGlobal = null;
+                    }
+                } while (c.moveToNext());
+            }
+        }
+        return;
+    }
+    public String get_global_id_medicion(int idMedicion){
+        String sql ="select idMedicionGlobal from medicion where idMedicion = "+idMedicion+" AND idMedicionGlobal IS NOT NULL;";
+        Cursor c = null;
+        String idMedicionGlobal = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! get_global_id_varible: "+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                do {
+                    idMedicionGlobal = c.getInt(0)+"";
+                } while (c.moveToNext());
+            }
+        }
+        return idMedicionGlobal;
+    }
+    public void update_global_id_variable(int idVariable, int idMedicionGlobal){
+        ContentValues valuesToUpdate = new ContentValues();
+        valuesToUpdate.put("idMedicionGlobal", idMedicionGlobal);
+        //actualizando tabla subvariable
+        try {
+            mDb.update("variable", valuesToUpdate, "idVariable = " + idVariable, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! update_medicion_dependencies>"+ mSQLException.toString());
+        }
+        return;
+    }
+
+    public void check_global_id_subvariable(){
+        String sql ="SELECT idSubVariable, idVariable FROM subvariable WHERE idVariableGlobal IS NULL;";
+        Cursor c = null;
+        String idVariableGlobal = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! check_global_id_subvariable: "+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                do {
+                    idVariableGlobal = get_global_id_variable(c.getInt(1));
+                    if(idVariableGlobal != null){ //hay que intentar actualizar
+                        update_global_id_subvariable(c.getInt(0), Integer.parseInt(idVariableGlobal));
+                        idVariableGlobal = null;
+                    }
+                } while (c.moveToNext());
+            }
+        }
+        return;
+    }
+    public String get_global_id_variable(int idVariable){
+        String sql ="select idVariableGlobal from variable where idVariable = "+idVariable+" AND idVariableGlobal IS NOT NULL;";
+        Cursor c = null;
+        String idVariableGlobal = null;
+        try{
+            c = mDb.rawQuery(sql, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! get_global_id_variable: "+ mSQLException.toString());
+        }
+        finally {
+            if (c.moveToFirst()) {
+                do {
+                    idVariableGlobal = c.getInt(0)+"";
+                } while (c.moveToNext());
+            }
+        }
+        return idVariableGlobal;
+    }
+    public void update_global_id_subvariable(int idSubVariable, int idVariableGlobal){
+        ContentValues valuesToUpdate = new ContentValues();
+        valuesToUpdate.put("idVariableGlobal", idVariableGlobal);
+        //actualizando tabla subvariable
+        try {
+            mDb.update("subvariable", valuesToUpdate, "idSubVariable = " + idSubVariable, null);
+        }
+        catch (SQLException mSQLException){
+            Log.e(TAG, "ERROR! update_global_id_subvariable>"+ mSQLException.toString());
+        }
+        return;
+    }
+
 
 
 

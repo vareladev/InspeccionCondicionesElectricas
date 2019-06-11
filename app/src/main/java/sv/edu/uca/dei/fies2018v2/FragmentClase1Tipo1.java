@@ -38,6 +38,9 @@ public class FragmentClase1Tipo1 extends Fragment {
     private static int GLobalIdClase;
     private static int GLobalIdTipo;
 
+    //para comentarios
+    private String global_comments;
+
 
     public FragmentClase1Tipo1() {
         // Required empty public constructor
@@ -78,6 +81,9 @@ public class FragmentClase1Tipo1 extends Fragment {
         //Base de datos
         adapter = new Adapter(getActivity());
         adapter.createDatabase();
+
+        //inicializando variable de comentarios:
+        global_comments = "";
 
         //objetos del fragmento
         //subtitulo
@@ -134,6 +140,9 @@ public class FragmentClase1Tipo1 extends Fragment {
         Button btn_res_5 = (Button) view.findViewById(R.id.btn_res_5);
         //boton para guardar evaluacion
         Button btn_save_eva = (Button) view.findViewById(R.id.btn_save_eva);
+        //boton comentarios
+        Button btn_comments = (Button) view.findViewById(R.id.btn_comments);
+
 
 
 
@@ -250,12 +259,43 @@ public class FragmentClase1Tipo1 extends Fragment {
                 seguridadElectrica.resistencia5(getActivity(),idSegElecMeasure,GLobalIdClase,GLobalIdTipo,img_res_5);
             }
         });
+        //*********************************************************
+        //boton comentarios
+        btn_comments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogGetComment();
+            }
+        });
+
+        //*********************************************************
+        //Desahibilitando las pruebas de resistencia debido a su alto grado de peligrosidad
+        btn_res_1.setEnabled(false);
+        btn_res_2.setEnabled(false);
+        btn_res_3.setEnabled(false);
+        btn_res_4.setEnabled(false);
+        btn_res_5.setEnabled(false);
+        evaluacion_5.setVisibility(LinearLayout.GONE);
+        evaluacion_6.setVisibility(LinearLayout.GONE);
+        evaluacion_7.setVisibility(LinearLayout.GONE);
+        evaluacion_8.setVisibility(LinearLayout.GONE);
+        evaluacion_9.setVisibility(LinearLayout.GONE);
+
+
 
         //guardar evaluacion
         btn_save_eva.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(seguridadElectrica.checkEva(GLobalIdClase,GLobalIdTipo)){
+                    //guardando los comentarios
+                    adapter.open();
+                    boolean updres=adapter.updateComment(idSegElecMeasure, global_comments);
+                    /*if(updres){
+                        Log.d("CLASE1","Se actualizo el comentario correctamente");
+                    }*/
+                    adapter.close();
+
                     //obteniendo mediciones de la tabla temporal
                     adapter.open();
                     ArrayList<NuevaMedicionSegElec> tempData = adapter.getAllTempMed();
@@ -308,6 +348,42 @@ public class FragmentClase1Tipo1 extends Fragment {
 
 
         return view;
+    }
+
+
+    private void dialogGetComment(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.pop_up_med_comment,null);
+        builder.setView(dialogView);
+
+        //inicializacion de objetos
+        final EditText txtComment = (EditText) dialogView.findViewById(R.id.txtComment);
+        Button btnCancelComment = (Button)dialogView.findViewById(R.id.btnCancelComment);
+        Button btnGetComment = (Button)dialogView.findViewById(R.id.btnGetComment);
+
+        //verificando si ya existe un comentario y mostrarlo
+        txtComment.setText(global_comments);
+
+        //inicializando dialog
+        final AlertDialog dialog = builder.create();
+
+        //Listener de los botones guardar y cancelar
+        btnCancelComment .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        btnGetComment .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                global_comments = txtComment.getText().toString();
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 
     public static <GenericClass> GenericClass getSavedObjectFromPreference(Context context, String preferenceFileName, String preferenceKey, Class<GenericClass> classType) {

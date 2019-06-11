@@ -41,8 +41,6 @@ public class MainActivity extends AppCompatActivity {
         login_dui = (EditText)findViewById(R.id.text_login_dui);
         login_password = (EditText)findViewById(R.id.text_login_password);
         iniciar_sesion = (Button)findViewById(R.id.btn_iniciar_sesion);
-        login_dui.setText("00000000-0");
-        login_password.setText("000");
 
         login_dui.clearFocus();
         login_password.clearFocus();
@@ -60,34 +58,26 @@ public class MainActivity extends AppCompatActivity {
                 String dui = login_dui.getText().toString();
                 String password = login_password.getText().toString();
 
-                if(dui.length() == 10) {
-                    adapter.open();
-                    Usuario usuario = adapter.checkUser(dui,password);
-                    adapter.close();
-                    if(usuario != null) {
-                        //guardando usuario en shared preferences
-                        saveObjectToSharedPreference(MainActivity.this, "preferences", "currentUser", usuario);
-                        //abriendo nueva ventana
-                        Intent toMenu = new Intent(MainActivity.this, Home.class);
-                        MainActivity.this.startActivity(toMenu);
-                    }
-                    else{
-                        adapter.close();
-                        login_dui.setText("");
-                        login_password.setText("");
-                        showMsg(MainActivity.this, "Usuario no encontrado, por favor verifique sus credenciales.",0);
-                    }
-                }else{
-                    login_password.setText("");
-                    showMsg(MainActivity.this, "Existe un error con el formato del DUI ingresado, por favor verifique sus credenciales.",0);
+                adapter.open();
+                Usuario usuario = adapter.checkUser(dui,password);
+                adapter.close();
+                if(usuario != null) {
+                    //guardando usuario en shared preferences
+                    saveObjectToSharedPreference(MainActivity.this, "preferences", "currentUser", usuario);
+                    //abriendo nueva ventana
+                    Intent toMenu = new Intent(MainActivity.this, Home.class);
+                    MainActivity.this.startActivity(toMenu);
                 }
-
-
-
+                else{
+                    adapter.close();
+                    login_dui.setText("");
+                    login_password.setText("");
+                    showMsg(MainActivity.this, "Usuario no encontrado, por favor verifique sus credenciales.",0);
+                }
             }
         });
 
-        login_dui.addTextChangedListener(new TextWatcher() {
+        /*login_dui.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void afterTextChanged(Editable s) {}
@@ -123,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-        });
+        });*/
 
 
         /*try {
